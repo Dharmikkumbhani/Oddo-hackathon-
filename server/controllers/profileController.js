@@ -39,6 +39,9 @@ exports.getProfile = async (req, res) => {
     }
 };
 
+const LeaveRequest = require('../models/LeaveRequest');
+const { Op } = require('sequelize');
+
 exports.getAllProfiles = async (req, res) => {
     try {
         const today = new Date().toISOString().split('T')[0];
@@ -49,14 +52,33 @@ exports.getAllProfiles = async (req, res) => {
                 required: false,
                 where: { date: today },
                 attributes: ['status']
+            }, {
+                model: LeaveRequest,
+                required: false,
+                where: {
+                    status: 'Approved',
+                    startDate: { [Op.lte]: today },
+                    endDate: { [Op.gte]: today }
+                },
+                attributes: ['status']
             }]
         });
 
         const profiles = users.map(user => {
             const u = user.toJSON();
             const att = u.Attendances && u.Attendances[0];
-            u.status = att ? att.status : 'Absent';
+            const leave = u.LeaveRequests && u.LeaveRequests[0];
+
+            if (leave) {
+                u.status = 'Leave';
+            } else if (att) {
+                u.status = att.status;
+            } else {
+                u.status = 'Absent';
+            }
+
             delete u.Attendances;
+            delete u.LeaveRequests;
             return u;
         });
 

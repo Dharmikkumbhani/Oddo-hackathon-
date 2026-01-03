@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { loginUser } from '../services/authService';
+import logo from '../assets/logo.jpg';
 
 const Login = () => {
   const [formData, setFormData] = useState({
@@ -35,9 +36,11 @@ const Login = () => {
       className="bg-white p-8 rounded-2xl shadow-xl w-full max-w-md border border-gray-100"
     >
       <div className="flex flex-col items-center mb-8">
-        <div className="w-48 h-12 bg-gray-200 rounded-md flex items-center justify-center text-gray-500 text-sm font-medium mb-2">
-          App/Web Logo
+        <div className="h-16 w-16 mb-4 rounded-full overflow-hidden shadow-lg border-2 border-white">
+             <img src={logo} alt="Emplify Logo" className="h-full w-full object-cover" />
         </div>
+        <h2 className="text-2xl font-bold text-gray-800">Emplify</h2>
+        <p className="text-gray-500 text-sm">HR Management System</p>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-6">

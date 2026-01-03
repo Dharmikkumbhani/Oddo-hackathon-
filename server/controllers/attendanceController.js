@@ -58,10 +58,12 @@ exports.checkOut = async (req, res) => {
         attendance.workHours = parseFloat(hours.toFixed(2));
 
         // Assuming 9 hours standard
-        if (hours > 9) {
+        if (hours >= 9) {
             attendance.extraHours = parseFloat((hours - 9).toFixed(2));
         }
-
+        else{
+            attendance.extraHours = 0;  
+        }
         await attendance.save();
 
         res.json(attendance);

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useOutletContext, useNavigate } from 'react-router-dom';
 import { getAllProfiles } from '../services/profileService';
 import { getCurrentUser } from '../services/authService';
-import { Search, X, Mail, Phone, MapPin, Briefcase } from 'lucide-react';
+import { Search, X, Mail, Phone, MapPin, Briefcase, Plane } from 'lucide-react';
 
 const Attendance = () => {
     const [employees, setEmployees] = useState([]);
@@ -57,7 +57,7 @@ const Attendance = () => {
     const getStatusColor = (status) => {
         switch (status) {
             case 'Present': return 'bg-green-500';
-            case 'Leave': return 'bg-blue-400';
+            case 'Leave': return 'bg-blue-400'; // Fallback
             case 'Absent': return 'bg-yellow-400';
             default: return 'bg-yellow-400';
         }
@@ -167,7 +167,13 @@ const Attendance = () => {
                             className="bg-white rounded-xl shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 cursor-pointer border border-gray-100 relative overflow-hidden group"
                         >
                             {/* Status Indicator */}
-                            <div className={`absolute top-4 right-4 h-3 w-3 rounded-full ${getStatusColor(getStatusForEmployee(emp))} ring-2 ring-white z-10`}></div>
+                            <div className="absolute top-4 right-4 z-10">
+                                {getStatusForEmployee(emp) === 'Leave' ? (
+                                     <Plane className="h-5 w-5 text-blue-500 fill-current" />
+                                ) : (
+                                    <div className={`h-3 w-3 rounded-full ${getStatusColor(getStatusForEmployee(emp))} ring-2 ring-white`}></div>
+                                )}
+                            </div>
 
                             <div className="p-6 flex flex-col items-center">
                                 <div className="h-20 w-20 rounded-full bg-gray-200 mb-4 overflow-hidden shadow-inner group-hover:scale-105 transition-transform duration-300">

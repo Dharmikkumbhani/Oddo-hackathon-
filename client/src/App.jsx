@@ -1,10 +1,8 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import Login from './pages/Login';
 import Signup from './pages/Signup';
-// import Dashboard from './pages/Dashboard';
 import Attendance from './pages/Attendance';
 import Profile from './pages/Profile';
-import Leave from './pages/Leave';
 
 function App() {
   return (
@@ -24,7 +22,6 @@ function App() {
         <Route path="/attendance" element={<Attendance />} />
         <Route path="/attendance-records" element={<Attendance />} />
         <Route path="/profile" element={<Profile />} />
-        <Route path="/leaves" element={<Leave />} />
         <Route path="/" element={<Navigate to="/login" replace />} />
       </Routes>
     </BrowserRouter>

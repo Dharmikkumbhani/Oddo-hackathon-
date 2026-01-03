@@ -49,6 +49,14 @@ const Employee = sequelize.define('Employee', {
   },
   about: {
     type: DataTypes.TEXT,
+  },
+  paidLeaveBalance: {
+    type: DataTypes.INTEGER,
+    defaultValue: 24,
+  },
+  sickLeaveBalance: {
+    type: DataTypes.INTEGER,
+    defaultValue: 7,
   }
 });
 

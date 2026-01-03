@@ -18,6 +18,9 @@ const profileRoutes = require('./routes/profileRoutes');
 app.use('/api/auth', authRoutes);
 app.use('/api/profile', profileRoutes);
 
+const leaveRoutes = require('./routes/leaveRoutes');
+app.use('/api/leaves', leaveRoutes);
+
 app.get('/', (req, res) => {
   res.send('API is running...');
 });

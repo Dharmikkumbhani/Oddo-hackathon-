@@ -57,69 +57,81 @@ const Attendance = () => {
     const getStatusColor = (status) => {
         switch (status) {
             case 'Present': return 'bg-green-500';
-            case 'Leave': return 'bg-blue-400'; // Fallback
+            case 'Leave': return 'bg-blue-400';
             case 'Absent': return 'bg-yellow-400';
             default: return 'bg-yellow-400';
         }
     };
 
     const Sidebar = () => (
-        <div className="fixed inset-y-0 right-0 w-96 bg-white shadow-2xl transform transition-transform duration-300 ease-in-out z-50 overflow-y-auto">
-            <div className="p-6">
-                <div className="flex justify-between items-center mb-6">
-                    <h2 className="text-xl font-bold text-gray-800">Employee Details</h2>
-                    <button onClick={() => setSelectedEmployee(null)} className="p-2 hover:bg-gray-100 rounded-full transition">
-                        <X className="h-6 w-6 text-gray-500" />
-                    </button>
-                </div>
-
-                <div className="flex flex-col items-center mb-8">
-                    <div className="h-24 w-24 rounded-full bg-gradient-to-tr from-blue-500 to-purple-600 flex items-center justify-center text-3xl font-bold text-white shadow-lg mb-4">
-                        {selectedEmployee?.name?.charAt(0).toUpperCase()}
+        <div className="fixed inset-0 z-[60] flex items-center justify-center p-4">
+            <div className="bg-white w-full max-w-lg rounded-3xl shadow-2xl overflow-hidden max-h-[90vh] overflow-y-auto border border-slate-100 animate-fade-in-up">
+                <div className="p-8">
+                    <div className="flex justify-between items-center mb-8">
+                        <h2 className="text-xl font-bold text-slate-800">Employee Details</h2>
+                        <button onClick={() => setSelectedEmployee(null)} className="p-2 hover:bg-slate-100 rounded-full transition-colors">
+                            <X className="h-5 w-5 text-slate-500" />
+                        </button>
                     </div>
-                    <h3 className="text-2xl font-bold text-gray-900 text-center">{selectedEmployee?.name}</h3>
-                    <p className="text-blue-600 font-medium">{selectedEmployee?.category || selectedEmployee?.role || 'Employee'}</p>
-                </div>
 
-                <div className="space-y-6">
-                    <div className="bg-gray-50 p-4 rounded-xl">
-                        <div className="flex items-center gap-3 text-gray-700 mb-2">
-                            <Mail className="h-5 w-5 text-gray-400" />
-                            <span className="font-medium">Email</span>
+                    <div className="flex flex-col items-center mb-8">
+                        <div className="h-24 w-24 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-3xl font-bold text-white shadow-xl shadow-blue-200 mb-4 ring-4 ring-blue-50">
+                            {selectedEmployee?.name?.charAt(0).toUpperCase()}
                         </div>
-                        <p className="text-gray-900 ml-8 break-all">{selectedEmployee?.email}</p>
+                        <h3 className="text-2xl font-bold text-slate-800 text-center tracking-tight mb-1">{selectedEmployee?.name}</h3>
+                        <p className="text-blue-600 font-medium bg-blue-50 px-4 py-1 rounded-full text-sm">{selectedEmployee?.role || 'Employee'}</p>
                     </div>
 
-                    <div className="bg-gray-50 p-4 rounded-xl">
-                        <div className="flex items-center gap-3 text-gray-700 mb-2">
-                            <Phone className="h-5 w-5 text-gray-400" />
-                            <span className="font-medium">Phone</span>
+                    <div className="space-y-4">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div className="group md:col-span-2">
+                                <div className="flex items-center gap-2 text-slate-500 mb-1 pl-1">
+                                    <Mail className="h-3.5 w-3.5" />
+                                    <span className="text-xs font-bold uppercase tracking-wider">Email</span>
+                                </div>
+                                <div className="bg-slate-50 p-3 rounded-xl border border-slate-100 text-slate-800 font-medium break-all text-sm">
+                                    {selectedEmployee?.email}
+                                </div>
+                            </div>
+
+                            <div className="group">
+                                <div className="flex items-center gap-2 text-slate-500 mb-1 pl-1">
+                                    <Phone className="h-3.5 w-3.5" />
+                                    <span className="text-xs font-bold uppercase tracking-wider">Phone</span>
+                                </div>
+                                <div className="bg-slate-50 p-3 rounded-xl border border-slate-100 text-slate-800 font-medium text-sm">
+                                    {selectedEmployee?.phone || 'N/A'}
+                                </div>
+                            </div>
+
+                            <div className="group">
+                                <div className="flex items-center gap-2 text-slate-500 mb-1 pl-1">
+                                    <MapPin className="h-3.5 w-3.5" />
+                                    <span className="text-xs font-bold uppercase tracking-wider">Location</span>
+                                </div>
+                                <div className="bg-slate-50 p-3 rounded-xl border border-slate-100 text-slate-800 font-medium text-sm">
+                                    {selectedEmployee?.location || 'Remote'}
+                                </div>
+                            </div>
+                            
+                            <div className="group md:col-span-2">
+                                <div className="flex items-center gap-2 text-slate-500 mb-1 pl-1">
+                                    <Briefcase className="h-3.5 w-3.5" />
+                                    <span className="text-xs font-bold uppercase tracking-wider">Department</span>
+                                </div>
+                                <div className="bg-slate-50 p-3 rounded-xl border border-slate-100 text-slate-800 font-medium text-sm">
+                                    {selectedEmployee?.department || 'General'}
+                                </div>
+                            </div>
                         </div>
-                        <p className="text-gray-900 ml-8">{selectedEmployee?.phone || 'N/A'}</p>
-                    </div>
 
-                    <div className="bg-gray-50 p-4 rounded-xl">
-                        <div className="flex items-center gap-3 text-gray-700 mb-2">
-                            <Briefcase className="h-5 w-5 text-gray-400" />
-                            <span className="font-medium">Department</span>
-                        </div>
-                        <p className="text-gray-900 ml-8">{selectedEmployee?.department || 'General'}</p>
+                        <button
+                            onClick={() => navigate(`/profile/${selectedEmployee.id}`)}
+                            className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white py-3.5 rounded-xl font-bold hover:shadow-lg hover:shadow-blue-200 transition-all transform hover:-translate-y-0.5 mt-2"
+                        >
+                            View Full Profile
+                        </button>
                     </div>
-
-                    <div className="bg-gray-50 p-4 rounded-xl">
-                        <div className="flex items-center gap-3 text-gray-700 mb-2">
-                            <MapPin className="h-5 w-5 text-gray-400" />
-                            <span className="font-medium">Location</span>
-                        </div>
-                        <p className="text-gray-900 ml-8">{selectedEmployee?.location || 'Remote'}</p>
-                    </div>
-
-                    <button
-                        onClick={() => navigate(`/profile/${selectedEmployee.id}`)}
-                        className="w-full bg-blue-600 text-white py-3 rounded-xl font-bold hover:bg-blue-700 transition shadow-lg mt-4"
-                    >
-                        View Full Profile & Edit Salary
-                    </button>
                 </div>
             </div>
         </div>
@@ -132,20 +144,20 @@ const Attendance = () => {
                 {(user?.role === 'Admin' || user?.role === 'HR') && (
                     <button 
                         onClick={() => navigate('/signup')} 
-                        className="bg-gradient-to-r from-purple-400 to-pink-500 text-white px-6 py-2 rounded-lg font-bold shadow-md hover:shadow-lg transform hover:-translate-y-0.5 transition-all w-full sm:w-auto"
+                        className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-6 py-2.5 rounded-lg font-bold shadow-md shadow-blue-200 hover:shadow-lg transition-all w-full sm:w-auto text-sm"
                     >
-                        NEW
+                        + Add New Employee
                     </button>
                 )}
 
                 <div className="relative w-full sm:w-96">
                     <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                        <Search className="h-5 w-5 text-gray-400" />
+                        <Search className="h-5 w-5 text-slate-400" />
                     </div>
                     <input
                         type="text"
                         placeholder="Search employees..."
-                        className="block w-full pl-10 pr-3 py-2 border border-gray-200 rounded-lg leading-5 bg-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm transition-shadow shadow-sm"
+                        className="block w-full pl-10 pr-3 py-2.5 border border-slate-200 rounded-lg leading-5 bg-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-100 focus:border-blue-500 sm:text-sm transition-all shadow-sm text-slate-700"
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
                     />
@@ -164,30 +176,32 @@ const Attendance = () => {
                         <div
                             key={emp.id}
                             onClick={() => handleCardClick(emp)}
-                            className="bg-white rounded-xl shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 cursor-pointer border border-gray-100 relative overflow-hidden group"
+                            className="bg-white rounded-2xl shadow-sm hover:shadow-xl hover:shadow-slate-200/50 hover:-translate-y-1 transition-all duration-300 cursor-pointer border border-slate-100 relative overflow-hidden group"
                         >
                             {/* Status Indicator */}
                             <div className="absolute top-4 right-4 z-10">
                                 {getStatusForEmployee(emp) === 'Leave' ? (
-                                     <Plane className="h-5 w-5 text-blue-500 fill-current" />
+                                     <div className="bg-blue-100 p-1.5 rounded-full">
+                                        <Plane className="h-3.5 w-3.5 text-blue-600" />
+                                     </div>
                                 ) : (
-                                    <div className={`h-3 w-3 rounded-full ${getStatusColor(getStatusForEmployee(emp))} ring-2 ring-white`}></div>
+                                    <div className={`h-3 w-3 rounded-full ${getStatusColor(getStatusForEmployee(emp))} ring-4 ring-white shadow-sm`}></div>
                                 )}
                             </div>
 
-                            <div className="p-6 flex flex-col items-center">
-                                <div className="h-20 w-20 rounded-full bg-gray-200 mb-4 overflow-hidden shadow-inner group-hover:scale-105 transition-transform duration-300">
+                            <div className="p-6 flex flex-col items-center pt-8">
+                                <div className="h-20 w-20 rounded-full bg-slate-50 mb-4 overflow-hidden shadow-inner group-hover:scale-105 transition-transform duration-300 ring-4 ring-slate-50">
                                     {/* Avatar Placeholder */}
-                                    <div className="h-full w-full bg-gradient-to-br from-indigo-400 to-cyan-400 flex items-center justify-center text-white text-xl font-bold">
+                                    <div className="h-full w-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white text-xl font-bold">
                                         {emp.name.charAt(0).toUpperCase()}
                                     </div>
                                 </div>
-                                <h3 className="text-lg font-bold text-gray-800 text-center mb-1 group-hover:text-blue-600 transition-colors">{emp.name}</h3>
-                                <p className="text-sm text-gray-500 text-center truncate w-full px-2">{emp.role || 'Employee'}</p>
+                                <h3 className="text-lg font-bold text-slate-800 text-center mb-1 group-hover:text-blue-600 transition-colors tracking-tight">{emp.name}</h3>
+                                <p className="text-sm text-slate-500 text-center w-full px-2 font-medium">{emp.role || 'Employee'}</p>
                             </div>
-                            <div className="bg-gray-50 px-6 py-3 border-t border-gray-100 flex justify-between items-center text-xs text-gray-500">
-                                <span>{emp.department || 'General'}</span>
-                                <span>{emp.employeeId || `EMP-${emp.id}`}</span>
+                            <div className="bg-slate-50/50 px-6 py-4 border-t border-slate-100 flex justify-between items-center text-xs text-slate-500 font-medium">
+                                <span className="flex items-center gap-1"><Briefcase className="w-3 h-3" /> {emp.department || 'General'}</span>
+                                <span className="bg-white px-2 py-1 rounded border border-slate-100 text-slate-400">{emp.employeeId || 'ID'}</span>
                             </div>
                         </div>
                     ))}
@@ -198,7 +212,7 @@ const Attendance = () => {
             {selectedEmployee && (
                 <>
                     <div
-                        className="fixed inset-0 bg-black bg-opacity-30 backdrop-blur-sm z-40 transition-opacity"
+                        className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 transition-opacity"
                         onClick={() => setSelectedEmployee(null)}
                     ></div>
                     <Sidebar />

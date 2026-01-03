@@ -30,11 +30,11 @@ const Signup = () => {
       alert("Passwords do not match");
       return;
     }
-    
+
     try {
       await registerUser(formData);
       // Redirect or show success
-      window.location.href = '/dashboard'; // Simple redirect for now
+      window.location.href = '/attendance'; // Simple redirect for now
     } catch (error) {
       console.error(error);
       alert(error.response?.data?.message || "Registration failed");
@@ -42,7 +42,7 @@ const Signup = () => {
   };
 
   return (
-    <motion.div 
+    <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       className="bg-white p-8 rounded-2xl shadow-xl w-full max-w-lg border border-gray-100 my-8"
@@ -90,7 +90,7 @@ const Signup = () => {
         </div>
 
         <div>
-           <label className="block text-gray-700 text-sm font-semibold mb-1" htmlFor="email">
+          <label className="block text-gray-700 text-sm font-semibold mb-1" htmlFor="email">
             Email
           </label>
           <input
@@ -105,7 +105,7 @@ const Signup = () => {
         </div>
 
         <div>
-           <label className="block text-gray-700 text-sm font-semibold mb-1" htmlFor="phone">
+          <label className="block text-gray-700 text-sm font-semibold mb-1" htmlFor="phone">
             Phone
           </label>
           <input
@@ -134,7 +134,7 @@ const Signup = () => {
               className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all"
               required
             />
-            <button 
+            <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
               className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
@@ -158,7 +158,7 @@ const Signup = () => {
               className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all"
               required
             />
-            <button 
+            <button
               type="button"
               onClick={() => setShowConfirmPassword(!showConfirmPassword)}
               className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"

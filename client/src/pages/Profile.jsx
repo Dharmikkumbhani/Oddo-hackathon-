@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import Navbar from '../components/Navbar';
 import { getProfile, updateProfile } from '../services/profileService';
 import { getCurrentUser } from '../services/authService';
 
@@ -78,7 +77,6 @@ const Profile = () => {
 
     return (
         <div className="bg-gray-50 min-h-screen font-sans text-gray-800">
-            <Navbar />
 
             <div className="max-w-6xl mx-auto p-6">
                 <div className="bg-white border rounded-lg shadow-sm mb-6">

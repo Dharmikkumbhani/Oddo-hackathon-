@@ -4,9 +4,6 @@ import Signup from './pages/Signup';
 import Attendance from './pages/Attendance';
 import Profile from './pages/Profile';
 
-import Layout from './components/Layout';
-import AttendanceRecords from './pages/AttendanceRecords';
-
 function App() {
   return (
     <BrowserRouter>
@@ -21,13 +18,10 @@ function App() {
             <Signup />
           </div>
         } />
-
-        <Route element={<Layout />}>
-          <Route path="/attendance" element={<Attendance />} />
-          <Route path="/attendance-records" element={<AttendanceRecords />} />
-          <Route path="/profile" element={<Profile />} />
-        </Route>
-
+        {/* <Route path="/dashboard" element={<Dashboard />} /> */}
+        <Route path="/attendance" element={<Attendance />} />
+        <Route path="/attendance-records" element={<Attendance />} />
+        <Route path="/profile" element={<Profile />} />
         <Route path="/" element={<Navigate to="/login" replace />} />
       </Routes>
     </BrowserRouter>

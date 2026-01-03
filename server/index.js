@@ -19,6 +19,9 @@ app.use('/api/auth', authRoutes);
 app.use('/api/profile', profileRoutes);
 app.use('/api/attendance', require('./routes/attendanceRoutes'));
 
+const leaveRoutes = require('./routes/leaveRoutes');
+app.use('/api/leaves', leaveRoutes);
+
 app.get('/', (req, res) => {
   res.send('API is running...');
 });

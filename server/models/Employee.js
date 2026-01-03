@@ -1,7 +1,7 @@
 const { DataTypes } = require('sequelize');
 const { sequelize } = require('../config/db');
 
-const User = sequelize.define('User', {
+const Employee = sequelize.define('Employee', {
   id: {
     type: DataTypes.INTEGER,
     autoIncrement: true,
@@ -31,10 +31,7 @@ const User = sequelize.define('User', {
     type: DataTypes.STRING,
     unique: true,
   },
-  role: {
-    type: DataTypes.ENUM('Admin', 'Employee', 'HR'),
-    defaultValue: 'Employee',
-  },
+  // Removed 'role' field as table implies role
   joiningYear: {
     type: DataTypes.INTEGER,
   },
@@ -52,23 +49,7 @@ const User = sequelize.define('User', {
   },
   about: {
     type: DataTypes.TEXT,
-  },
-  interests: {
-    type: DataTypes.JSONB, // Storing as JSON array of strings
-    defaultValue: []
-  },
-  skills: {
-    type: DataTypes.JSONB, // Storing as JSON array of strings
-    defaultValue: []
-  },
-  certifications: {
-    type: DataTypes.JSONB, // Storing as JSON array of objects/strings
-    defaultValue: []
-  },
-  salaryDetails: {
-    type: DataTypes.JSONB, // Storing detailed salary components
-    defaultValue: {}
   }
 });
 
-module.exports = User;
+module.exports = Employee;

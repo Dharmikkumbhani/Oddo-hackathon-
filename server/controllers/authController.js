@@ -1,19 +1,19 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const User = require('../models/User');
+const Admin = require('../models/Admin');
+const HR = require('../models/HR');
+const Employee = require('../models/Employee');
 const { Op } = require('sequelize');
 
 const generateEmployeeID = async (companyName, fullName, year) => {
-  // 1. Company Initials (First 2 letters of company name or initials of words)
+  // 1. Company Initials
   let companyInitials = companyName.substring(0, 2).toUpperCase();
   const words = companyName.split(' ');
   if (words.length > 1) {
       companyInitials = (words[0][0] + words[1][0]).toUpperCase();
   }
 
-  // 2. Name Initials (First 2 letters of First Name + First 2 letters of Last Name)
-  // Logic: "JODO -> First two letters of the employee's first name and last name"
-  // Example: John Doe -> JO + DO
+  // 2. Name Initials
   let nameInitials = "XX";
   const nameParts = fullName.trim().split(' ');
   if (nameParts.length >= 2) {
@@ -21,12 +21,11 @@ const generateEmployeeID = async (companyName, fullName, year) => {
       const last = nameParts[nameParts.length - 1].substring(0, 2).toUpperCase();
       nameInitials = first + last;
   } else if (nameParts.length === 1) {
-       nameInitials = nameParts[0].substring(0, 2).toUpperCase() + "XX"; // Fallback
+       nameInitials = nameParts[0].substring(0, 2).toUpperCase() + "XX";
   }
 
   // 3. Serial Number
-  // Count users in this company with this joining year
-  const count = await User.count({
+  const count = await Employee.count({
       where: {
           companyName: companyName,
           joiningYear: year
@@ -41,54 +40,48 @@ const generateEmployeeID = async (companyName, fullName, year) => {
   };
 };
 
-// Register (Sign Up)
+// Register (Creates a new Employee)
 exports.register = async (req, res) => {
   try {
-    const { companyName, name, email, phone, password, role } = req.body;
+    const { companyName, name, email, phone, password } = req.body;
+    // NOTE: 'role' is ignored here because Sign Up is strictly for Employees now.
 
-    // Check if user exists
-    let user = await User.findOne({ where: { email } });
-    if (user) {
-      return res.status(400).json({ message: 'User already exists' });
+    // Check if employee exists
+    let employee = await Employee.findOne({ where: { email } });
+    if (employee) {
+      return res.status(400).json({ message: 'Employee already exists' });
     }
 
-    // Hash Password
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
 
-    // Generate Employee ID
     const year = new Date().getFullYear();
     const { fullId, serial } = await generateEmployeeID(companyName, name, year);
 
-    // Initial user is Admin if they provide CompanyName (Assumption for signup flow)
-    // Or we rely on 'role' field passed from frontend. 
-    // The prompt says "Sign Up" page -> HR Officer can register new user? 
-    // The prompt image says "Sign Up Page" -> Company Name. This implies creating a NEW Company Account (Admin).
-    
-    user = await User.create({
+    employee = await Employee.create({
       companyName,
       name,
       email,
       phone,
       password: hashedPassword,
       employeeId: fullId,
-      role: role || 'Employee', // Default to Employee, but respect user choice (Admin/HR)
       joiningYear: year,
       serialNumber: serial
     });
 
-    const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET, {
+    // Automatically log them in as Employee
+    const token = jwt.sign({ id: employee.id, role: 'Employee' }, process.env.JWT_SECRET, {
       expiresIn: '1d',
     });
 
     res.status(201).json({
       token,
       user: {
-        id: user.id,
-        name: user.name,
-        email: user.email,
-        employeeId: user.employeeId,
-        role: user.role
+        id: employee.id,
+        name: employee.name,
+        email: employee.email,
+        employeeId: employee.employeeId,
+        role: 'Employee'
       }
     });
   } catch (error) {
@@ -97,35 +90,45 @@ exports.register = async (req, res) => {
   }
 };
 
-// Login (Sign In)
+// Login (Handles Admin, HR, Employee)
 exports.login = async (req, res) => {
   try {
-    const { identifier, password } = req.body;
+    const { identifier, password, role } = req.body;
+    console.log(`Login Attempt: Role=${role}, Identifier=${identifier}`);
 
-    // Identifier can be Email or EmployeeID
-    const user = await User.findOne({
-      where: {
-        [Op.or]: [
-          { email: identifier },
-          { employeeId: identifier }
-        ]
-      }
-    });
+    let user;
+    let dbRole = role;
 
-    if (!user) {
-      return res.status(400).json({ message: 'Invalid Credentials' });
+    if (role === 'Admin') {
+       user = await Admin.findOne({ where: { username: identifier } });
+    } else if (role === 'HR') {
+       user = await HR.findOne({ where: { username: identifier } });
+    } else {
+       // Employee: identifier can be Email or EmployeeID
+       dbRole = 'Employee';
+       user = await Employee.findOne({
+          where: {
+            [Op.or]: [
+              { email: identifier },
+              { employeeId: identifier }
+            ]
+          }
+       });
     }
 
-    if (req.body.role && user.role !== req.body.role) {
-      return res.status(400).json({ message: `Access Denied: You are not an ${req.body.role}` });
+    if (!user) {
+      console.log('❌ User not found in database');
+      return res.status(400).json({ message: 'Invalid Credentials' });
     }
 
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
+      console.log('❌ Password mismatch');
       return res.status(400).json({ message: 'Invalid Credentials' });
     }
 
-    const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET, {
+    console.log('✅ Login Successful');
+    const token = jwt.sign({ id: user.id, role: dbRole }, process.env.JWT_SECRET, {
       expiresIn: '1d',
     });
 
@@ -133,14 +136,14 @@ exports.login = async (req, res) => {
       token,
       user: {
         id: user.id,
-        name: user.name,
-        email: user.email,
-        employeeId: user.employeeId,
-        role: user.role
+        name: user.name || user.username, // Admin/HR have username, Employee has name
+        email: user.email || user.username,
+        employeeId: user.employeeId || 'N/A',
+        role: dbRole
       }
     });
   } catch (error) {
-    console.error(error);
+    console.error('Login Error:', error);
     res.status(500).json({ message: 'Server Error' });
   }
 };

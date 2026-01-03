@@ -1,5 +1,7 @@
 const jwt = require('jsonwebtoken');
-const User = require('../models/User');
+const Admin = require('../models/Admin');
+const HR = require('../models/HR');
+const Employee = require('../models/Employee');
 
 const protect = async (req, res, next) => {
     let token;
@@ -13,7 +15,22 @@ const protect = async (req, res, next) => {
 
             const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-            req.user = await User.findByPk(decoded.id);
+            let user;
+            if (decoded.role === 'Admin') {
+                user = await Admin.findByPk(decoded.id);
+            } else if (decoded.role === 'HR') {
+                user = await HR.findByPk(decoded.id);
+            } else {
+                user = await Employee.findByPk(decoded.id);
+            }
+
+            if (!user) {
+                 return res.status(401).json({ message: 'Not authorized, user not found' });
+            }
+
+            // Attach user and role to request
+            req.user = user.toJSON(); // Convert to plain object
+            req.user.role = decoded.role; // Ensure role is present
 
             next();
         } catch (error) {

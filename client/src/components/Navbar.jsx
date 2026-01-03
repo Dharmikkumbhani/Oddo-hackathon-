@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { User, LogOut, Circle } from 'lucide-react';
-import logo from '../assets/logo.jpg';
+import logo from '../assets/dayflow-logo.png';
 
 const Navbar = ({ user, handleLogout, isCheckedIn, toggleCheckIn }) => {
     const navigate = useNavigate();
@@ -32,8 +32,8 @@ const Navbar = ({ user, handleLogout, isCheckedIn, toggleCheckIn }) => {
                 <div className="flex justify-between items-center h-16">
                     {/* Left: Company Logo */}
                     <div className="flex-shrink-0 flex items-center cursor-pointer gap-2" onClick={() => navigate('/dashboard')}>
-                        <img src={logo} alt="Emplify Logo" className="h-8 w-8 rounded-md" />
-                        <span className="font-bold text-xl text-gray-800 tracking-tight">Emplify</span>
+                        <img src={logo} alt="Dayflow Logo" className="h-8 w-auto rounded-md" />
+                        <span className="font-bold text-xl text-gray-800 tracking-tight">Dayflow</span>
                     </div>
 
                     {/* Center: Navigation Links */}

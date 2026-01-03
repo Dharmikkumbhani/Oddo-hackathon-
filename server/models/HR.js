@@ -12,6 +12,10 @@ const HR = sequelize.define('HR', {
     allowNull: false,
     unique: true,
   },
+  profilePicture: {
+    type: DataTypes.STRING, 
+    allowNull: true // URL from ImageKit
+  },
   password: {
     type: DataTypes.STRING,
     allowNull: false,

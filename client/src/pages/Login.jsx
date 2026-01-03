@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { loginUser } from '../services/authService';
-import logo from '../assets/logo.jpg';
+import logo from '../assets/dayflow-logo.png';
 
 const Login = () => {
   const [formData, setFormData] = useState({
@@ -37,9 +37,9 @@ const Login = () => {
     >
       <div className="flex flex-col items-center mb-8">
         <div className="h-16 w-16 mb-4 rounded-full overflow-hidden shadow-lg border-2 border-white">
-             <img src={logo} alt="Emplify Logo" className="h-full w-full object-cover" />
+             <img src={logo} alt="Dayflow Logo" className="h-full w-full object-cover" />
         </div>
-        <h2 className="text-2xl font-bold text-gray-800">Emplify</h2>
+        <h2 className="text-2xl font-bold text-gray-800">Dayflow</h2>
         <p className="text-gray-500 text-sm">HR Management System</p>
       </div>
 

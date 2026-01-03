@@ -79,7 +79,22 @@ const Employee = sequelize.define('Employee', {
   sickLeaveBalance: {
     type: DataTypes.INTEGER,
     defaultValue: 7,
-  }
+  },
+  // Personal Info
+  profilePicture: { type: DataTypes.STRING }, // URL from ImageKit
+  dob: { type: DataTypes.DATEONLY },
+  gender: { type: DataTypes.STRING },
+  maritalStatus: { type: DataTypes.STRING },
+  nationality: { type: DataTypes.STRING },
+  personalEmail: { type: DataTypes.STRING },
+  address: { type: DataTypes.STRING }, // Residing Address
+
+  // Bank/Financial Details
+  bankName: { type: DataTypes.STRING },
+  bankAccount: { type: DataTypes.STRING },
+  ifscCode: { type: DataTypes.STRING },
+  panNo: { type: DataTypes.STRING },
+  uanNo: { type: DataTypes.STRING },
 });
 
 module.exports = Employee;

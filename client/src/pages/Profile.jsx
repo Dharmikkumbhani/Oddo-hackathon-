@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { getProfile, updateProfile } from '../services/profileService';
+import { getProfile, updateProfile, uploadProfilePicture } from '../services/profileService';
 import { getCurrentUser } from '../services/authService';
+import { Pencil, ShieldCheck, HeartPulse, Lock, Scale, Briefcase, Camera } from 'lucide-react';
 
 const Profile = () => {
     const { id } = useParams(); // Get ID from URL if present
@@ -10,9 +11,24 @@ const Profile = () => {
     const [loading, setLoading] = useState(true);
     const [isEditing, setIsEditing] = useState(false);
     const currentUser = getCurrentUser();
+    const fileInputRef = React.useRef(null);
 
     // If ID is in URL, fetch that user. Otherwise fetch 'me'.
     const targetUserId = id || 'me';
+
+    const handleImageChange = async (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        try {
+            const result = await uploadProfilePicture(targetUserId, file);
+            setProfile(prev => ({ ...prev, profilePicture: result.url }));
+            alert('Profile picture updated!');
+        } catch (error) {
+            console.error('Failed to upload image', error);
+            alert('Failed to upload image');
+        }
+    };
 
     // Default Salary Configuration
     const initialSalaryConfig = {
@@ -189,12 +205,29 @@ const Profile = () => {
                     <div className="p-6 grid grid-cols-1 md:grid-cols-3 gap-8">
                         {/* Avatar Section */}
                         <div className="flex flex-col items-center justify-center md:col-span-1">
-                            <div className="w-32 h-32 rounded-full bg-pink-300 flex items-center justify-center relative mb-4">
-                                <span className="text-4xl text-white">✏️</span>
+                            <div className="w-32 h-32 rounded-full bg-gray-100 flex items-center justify-center relative mb-4 shadow-sm border-4 border-white overflow-hidden">
+                                {profile.profilePicture ? (
+                                    <img src={profile.profilePicture} alt="Profile" className="w-full h-full object-cover" />
+                                ) : (
+                                    <Pencil className="h-10 w-10 text-gray-400" />
+                                )}
+                                
                                 {isEditing && (
-                                    <div className="absolute bottom-0 right-0 bg-white p-1 rounded-full border shadow cursor-pointer">
-                                        <span className="text-xs">📷</span>
-                                    </div>
+                                    <>
+                                        <div 
+                                            className="absolute bottom-0 right-0 bg-white p-2 rounded-full border shadow cursor-pointer hover:bg-gray-50 transition-colors"
+                                            onClick={() => fileInputRef.current?.click()}
+                                        >
+                                            <Camera size={16} className="text-gray-600" />
+                                        </div>
+                                        <input 
+                                            type="file" 
+                                            ref={fileInputRef} 
+                                            className="hidden" 
+                                            accept="image/*"
+                                            onChange={handleImageChange}
+                                        />
+                                    </>
                                 )}
                             </div>
                             <div className="w-full text-center">
@@ -223,12 +256,24 @@ const Profile = () => {
                             </div>
                             <div className="flex flex-col border-b pb-1">
                                 <span className="text-gray-500 text-xs">Company</span>
-                                <span className="font-medium">{profile.companyName || 'N/A'}</span>
+                                <input
+                                    disabled={!isEditing}
+                                    value={profile.companyName || ''}
+                                    onChange={(e) => handleChange('companyName', e.target.value)}
+                                    className={`font-medium w-full bg-transparent outline-none ${isEditing ? 'border-b border-blue-200' : ''}`}
+                                    placeholder="Company Name"
+                                />
                             </div>
 
                             <div className="flex flex-col border-b pb-1">
                                 <span className="text-gray-500 text-xs">Email</span>
-                                <span className="font-medium">{profile.email || 'N/A'}</span>
+                                <input
+                                    disabled={!isEditing}
+                                    value={profile.email || ''}
+                                    onChange={(e) => handleChange('email', e.target.value)}
+                                    className={`font-medium w-full bg-transparent outline-none ${isEditing ? 'border-b border-blue-200' : ''}`}
+                                    placeholder="Email"
+                                />
                             </div>
                             <div className="flex flex-col border-b pb-1">
                                 <span className="text-gray-500 text-xs">Department</span>
@@ -383,44 +428,227 @@ const Profile = () => {
                     )}
 
                     {activeTab === 'private' && (
-                        <div className="md:col-span-3 bg-white p-6 rounded-lg border shadow-sm">
-                            <h3 className="text-lg font-semibold mb-4">Private Information</h3>
-                            <div className="grid grid-cols-2 gap-6">
-                                <div>
-                                    <label className="block text-sm text-gray-500">Address</label>
-                                    <input
-                                        disabled={!isEditing}
-                                        value={profile.address || ''}
-                                        onChange={e => handleChange('address', e.target.value)}
-                                        className="w-full border-b focus:border-blue-500 outline-none py-1"
-                                    />
+                        <div className="md:col-span-3 bg-white p-8 rounded-lg border shadow-sm">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+                                {/* Left Column: Personal Info */}
+                                <div className="space-y-6">
+                                    <div className="flex border-b border-gray-200 pb-1">
+                                        <span className="w-1/3 text-gray-600 font-medium">Date of Birth</span>
+                                        <input
+                                            disabled={!isEditing}
+                                            type="date"
+                                            value={profile.dob || ''}
+                                            onChange={e => handleChange('dob', e.target.value)}
+                                            className="flex-1 bg-transparent outline-none text-gray-800"
+                                        />
+                                    </div>
+                                    <div className="flex border-b border-gray-200 pb-1">
+                                        <span className="w-1/3 text-gray-600 font-medium">Residing Address</span>
+                                        <input
+                                            disabled={!isEditing}
+                                            value={profile.address || ''}
+                                            onChange={e => handleChange('address', e.target.value)}
+                                            className="flex-1 bg-transparent outline-none text-gray-800"
+                                        />
+                                    </div>
+                                    <div className="flex border-b border-gray-200 pb-1">
+                                        <span className="w-1/3 text-gray-600 font-medium">Nationality</span>
+                                        <input
+                                            disabled={!isEditing}
+                                            value={profile.nationality || ''}
+                                            onChange={e => handleChange('nationality', e.target.value)}
+                                            className="flex-1 bg-transparent outline-none text-gray-800"
+                                        />
+                                    </div>
+                                    <div className="flex border-b border-gray-200 pb-1">
+                                        <span className="w-1/3 text-gray-600 font-medium">Personal Email</span>
+                                        <input
+                                            disabled={!isEditing}
+                                            value={profile.personalEmail || ''}
+                                            onChange={e => handleChange('personalEmail', e.target.value)}
+                                            className="flex-1 bg-transparent outline-none text-gray-800"
+                                        />
+                                    </div>
+                                    <div className="flex border-b border-gray-200 pb-1">
+                                        <span className="w-1/3 text-gray-600 font-medium">Gender</span>
+                                        <select
+                                            disabled={!isEditing}
+                                            value={profile.gender || ''}
+                                            onChange={e => handleChange('gender', e.target.value)}
+                                            className="flex-1 bg-transparent outline-none text-gray-800"
+                                        >
+                                            <option value="">Select</option>
+                                            <option value="Male">Male</option>
+                                            <option value="Female">Female</option>
+                                            <option value="Other">Other</option>
+                                        </select>
+                                    </div>
+                                    <div className="flex border-b border-gray-200 pb-1">
+                                        <span className="w-1/3 text-gray-600 font-medium">Marital Status</span>
+                                        <select
+                                            disabled={!isEditing}
+                                            value={profile.maritalStatus || ''}
+                                            onChange={e => handleChange('maritalStatus', e.target.value)}
+                                            className="flex-1 bg-transparent outline-none text-gray-800"
+                                        >
+                                            <option value="">Select</option>
+                                            <option value="Single">Single</option>
+                                            <option value="Married">Married</option>
+                                            <option value="Divorced">Divorced</option>
+                                        </select>
+                                    </div>
+                                    <div className="flex border-b border-gray-200 pb-1">
+                                        <span className="w-1/3 text-gray-600 font-medium">Date of Joining</span>
+                                        <div className="flex-1 text-gray-800">{profile.joiningYear || 'N/A'}</div>
+                                    </div>
                                 </div>
+
+                                {/* Right Column: Bank Details */}
                                 <div>
-                                    <label className="block text-sm text-gray-500">Personal Email</label>
-                                    <input
-                                        disabled={!isEditing}
-                                        value={profile.personalEmail || ''}
-                                        onChange={e => handleChange('personalEmail', e.target.value)}
-                                        className="w-full border-b focus:border-blue-500 outline-none py-1"
-                                    />
-                                </div>
-                                <div>
-                                    <label className="block text-sm text-gray-500">Bank Account Number</label>
-                                    <input
-                                        disabled={!isEditing}
-                                        value={profile.bankAccount || ''}
-                                        onChange={e => handleChange('bankAccount', e.target.value)}
-                                        className="w-full border-b focus:border-blue-500 outline-none py-1"
-                                    />
+                                    <h3 className="text-lg font-semibold mb-6 border-b pb-2">Bank Details</h3>
+                                    <div className="space-y-6">
+                                        <div className="flex border-b border-gray-200 pb-1">
+                                            <span className="w-1/3 text-gray-600 font-medium">Account Number</span>
+                                            <input
+                                                disabled={!isEditing}
+                                                value={profile.bankAccount || ''}
+                                                onChange={e => handleChange('bankAccount', e.target.value)}
+                                                className="flex-1 bg-transparent outline-none text-gray-800"
+                                            />
+                                        </div>
+                                        <div className="flex border-b border-gray-200 pb-1">
+                                            <span className="w-1/3 text-gray-600 font-medium">Bank Name</span>
+                                            <input
+                                                disabled={!isEditing}
+                                                value={profile.bankName || ''}
+                                                onChange={e => handleChange('bankName', e.target.value)}
+                                                className="flex-1 bg-transparent outline-none text-gray-800"
+                                            />
+                                        </div>
+                                        <div className="flex border-b border-gray-200 pb-1">
+                                            <span className="w-1/3 text-gray-600 font-medium">IFSC Code</span>
+                                            <input
+                                                disabled={!isEditing}
+                                                value={profile.ifscCode || ''}
+                                                onChange={e => handleChange('ifscCode', e.target.value)}
+                                                className="flex-1 bg-transparent outline-none text-gray-800"
+                                            />
+                                        </div>
+                                        <div className="flex border-b border-gray-200 pb-1">
+                                            <span className="w-1/3 text-gray-600 font-medium">PAN No</span>
+                                            <input
+                                                disabled={!isEditing}
+                                                value={profile.panNo || ''}
+                                                onChange={e => handleChange('panNo', e.target.value)}
+                                                className="flex-1 bg-transparent outline-none text-gray-800"
+                                            />
+                                        </div>
+                                        <div className="flex border-b border-gray-200 pb-1">
+                                            <span className="w-1/3 text-gray-600 font-medium">UAN NO</span>
+                                            <input
+                                                disabled={!isEditing}
+                                                value={profile.uanNo || ''}
+                                                onChange={e => handleChange('uanNo', e.target.value)}
+                                                className="flex-1 bg-transparent outline-none text-gray-800"
+                                            />
+                                        </div>
+                                        <div className="flex border-b border-gray-200 pb-1">
+                                            <span className="w-1/3 text-gray-600 font-medium">Emp Code</span>
+                                            <div className="flex-1 text-gray-800">{profile.employeeId || 'N/A'}</div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     )}
 
                     {activeTab === 'security' && (
-                        <div className="md:col-span-3 bg-white p-6 rounded-lg border shadow-sm">
-                            <h3 className="text-lg font-semibold mb-4">Security Settings</h3>
-                            <p className="text-gray-500">Password reset and 2FA settings would go here.</p>
+                        <div className="md:col-span-3 space-y-6">
+                            {/* Provident Fund */}
+                            <div className="bg-white p-6 rounded-lg border shadow-sm flex gap-4">
+                                <div className="flex-shrink-0">
+                                    <div className="h-12 w-12 rounded-full bg-blue-100 flex items-center justify-center text-blue-600">
+                                        <ShieldCheck size={28} />
+                                    </div>
+                                </div>
+                                <div>
+                                    <div className="flex justify-between items-start mb-1">
+                                        <h3 className="text-lg font-bold text-gray-900">Provident Fund (PF) Compliance</h3>
+                                        <span className="px-2 py-1 bg-green-100 text-green-800 text-xs font-semibold rounded-full">Active & Compliant</span>
+                                    </div>
+                                    <p className="text-sm font-semibold text-gray-600 mb-2">Statutory PF Contribution</p>
+                                    <p className="text-sm text-gray-500">
+                                        As part of your financial security, Emplify automatically processes your Employee Provident Fund (EPF). Both the employee and employer contribute 12% of the basic salary monthly to ensure your long-term savings and pension security.
+                                    </p>
+                                </div>
+                            </div>
+
+                            {/* Health Insurance */}
+                            <div className="bg-white p-6 rounded-lg border shadow-sm flex gap-4">
+                                <div className="flex-shrink-0">
+                                    <div className="h-12 w-12 rounded-full bg-red-100 flex items-center justify-center text-red-600">
+                                        <HeartPulse size={28} />
+                                    </div>
+                                </div>
+                                <div>
+                                    <div className="flex justify-between items-start mb-1">
+                                        <h3 className="text-lg font-bold text-gray-900">Corporate Health Insurance</h3>
+                                        <span className="text-sm font-bold text-gray-700">₹5,00,000 / Year</span>
+                                    </div>
+                                    <p className="text-sm font-semibold text-gray-600 mb-2">Group Medical Cover</p>
+                                    <p className="text-sm text-gray-500">
+                                        You are covered under the company’s Group Medical Cover (GMC). This policy provides cashless hospitalization and emergency care for you and your immediate dependents (Spouse + 2 Children).
+                                    </p>
+                                </div>
+                            </div>
+
+                            {/* Data Privacy */}
+                            <div className="bg-white p-6 rounded-lg border shadow-sm flex gap-4">
+                                <div className="flex-shrink-0">
+                                    <div className="h-12 w-12 rounded-full bg-purple-100 flex items-center justify-center text-purple-600">
+                                        <Lock size={28} />
+                                    </div>
+                                </div>
+                                <div>
+                                    <h3 className="text-lg font-bold text-gray-900 mb-1">Data Privacy & Encryption</h3>
+                                    <p className="text-sm font-semibold text-gray-600 mb-2">256-Bit Data Protection</p>
+                                    <p className="text-sm text-gray-500">
+                                        Your personal data, salary slips, and bank details are encrypted using industry-standard AES-256 encryption. Only you and authorized HR administrators have access to your "Private Info" and "Salary Info" tabs.
+                                    </p>
+                                </div>
+                            </div>
+
+                            {/* POSH */}
+                            <div className="bg-white p-6 rounded-lg border shadow-sm flex gap-4">
+                                <div className="flex-shrink-0">
+                                    <div className="h-12 w-12 rounded-full bg-yellow-100 flex items-center justify-center text-yellow-600">
+                                        <Scale size={28} />
+                                    </div>
+                                </div>
+                                <div>
+                                    <h3 className="text-lg font-bold text-gray-900 mb-1">Workplace Safety (POSH)</h3>
+                                    <p className="text-sm font-semibold text-gray-600 mb-2">Zero-Harassment Policy</p>
+                                    <p className="text-sm text-gray-500">
+                                        We are committed to providing a safe workplace. Our POSH (Prevention of Sexual Harassment) policy ensures a secure environment for all employees. All grievances are handled with strict confidentiality.
+                                    </p>
+                                </div>
+                            </div>
+
+                            {/* Gratuity */}
+                            <div className="bg-white p-6 rounded-lg border shadow-sm flex gap-4">
+                                <div className="flex-shrink-0">
+                                    <div className="h-12 w-12 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-600">
+                                        <Briefcase size={28} />
+                                    </div>
+                                </div>
+                                <div>
+                                    <h3 className="text-lg font-bold text-gray-900 mb-1">Gratuity Benefits</h3>
+                                    <p className="text-sm font-semibold text-gray-600 mb-2">Terminal Benefits</p>
+                                    <p className="text-sm text-gray-500">
+                                        In accordance with statutory regulations, you are eligible for Gratuity benefits after 5 years of continuous service. This serves as a reward for your loyalty and long-term service to the organization.
+                                    </p>
+                                </div>
+                            </div>
                         </div>
                     )}
 

@@ -46,3 +46,22 @@ export const updateProfile = async (id, data) => {
     const response = await axios.put(`${API_URL}/${id}`, data, config);
     return response.data;
 };
+
+// Upload Profile Picture
+export const uploadProfilePicture = async (id, file) => {
+    const userData = JSON.parse(localStorage.getItem('user'));
+    const token = userData?.token;
+
+    const formData = new FormData();
+    formData.append('image', file);
+
+    const config = {
+        headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'multipart/form-data'
+        },
+    };
+
+    const response = await axios.post(`${API_URL}/${id}/picture`, formData, config);
+    return response.data;
+};

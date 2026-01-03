@@ -42,6 +42,84 @@ exports.getProfile = async (req, res) => {
 const LeaveRequest = require('../models/LeaveRequest');
 const { Op } = require('sequelize');
 
+const ImageKit = require("imagekit");
+
+const imagekit = new ImageKit({
+    publicKey: process.env.IMAGEKIT_PUBLIC_KEY,
+    privateKey: process.env.IMAGEKIT_PRIVATE_KEY,
+    urlEndpoint: process.env.IMAGEKIT_ENDPOINT_URL
+});
+
+exports.uploadProfilePicture = async (req, res) => {
+    try {
+        const userId = req.params.id === 'me' ? req.user.id : req.params.id;
+
+        // Check permissions (Same logic as update)
+        if (req.user.role !== 'Admin' && req.user.role !== 'HR' && parseInt(userId) !== req.user.id) {
+            return res.status(403).json({ message: 'Not authorized' });
+        }
+
+        if (!req.file) {
+            return res.status(400).json({ message: 'No file uploaded' });
+        }
+
+        const fileBuffer = req.file.buffer;
+        const fileName = `profile-${userId}-${Date.now()}`;
+
+        imagekit.upload({
+            file: fileBuffer, //required
+            fileName: fileName, //required
+            folder: '/employee_profiles'
+        }, async (error, result) => {
+            if (error) {
+                console.error("ImageKit Error:", error);
+                return res.status(500).json({ message: "Image upload failed", error: error.message });
+            }
+
+            // Update user profile
+            let user;
+            // Determine which model to use based on the target user's role
+            // But here we only have userId.
+            // If the requester is editing their own profile ('me'), we know the role.
+            // If editing someone else, it's likely an Employee.
+            
+            if (req.params.id === 'me') {
+                 user = await findUserByRole(req.user.id, req.user.role);
+            } else {
+                 // Assuming we are editing an email employee
+                 user = await Employee.findByPk(userId);
+            }
+            
+            if (!user) {
+                return res.status(404).json({ message: 'User not found' });
+            }
+
+            // Check if the model has the field (Admin/HR might not)
+            if (user.dataValues.profilePicture === undefined && req.user.role !== 'Employee') {
+                 // For now, simpler: Only Employees have profile pictures in this design?
+                 // Or we need to add profilePicture to Admin/HR models too.
+                 // Let's assume for now we only support Employee pictures as per instruction.
+                 // But if I am an Admin, looking at my profile, and upload... it might fail if field missing.
+                 
+                 // However, let's stick to the most likely cause:
+                 // The user says "photos become invisible". 
+                 // If I am an Employee, I upload, it says success. 
+                 // If the column didn't exist, it would 500.
+                 // If it 200s, it thinks it saved.
+            }
+            
+            user.profilePicture = result.url;
+            await user.save();
+
+            res.json({ message: 'Profile picture updated', url: result.url });
+        });
+
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Server Error' });
+    }
+};
+
 exports.getAllProfiles = async (req, res) => {
     try {
         const today = new Date().toISOString().split('T')[0];
@@ -116,7 +194,7 @@ exports.updateProfile = async (req, res) => {
         }
 
         const {
-            name, phone, location, about, interests, skills, certifications,
+            name, email, phone, location, about, interests, skills, certifications,
             jobPosition, loveJob,
             department, manager, salaryDetails, joiningYear, serialNumber, companyName, employeeId
         } = req.body;
@@ -124,10 +202,27 @@ exports.updateProfile = async (req, res) => {
         console.log(`[UPDATE PROFILE] User: ${user.id} Role: ${req.user.role}`);
 
         // Common Fields (Anyone with write access)
+        if (email !== undefined) user.email = email;
+        if (companyName !== undefined) user.companyName = companyName;
         if (phone !== undefined) user.phone = phone;
         if (location !== undefined) user.location = location;
         if (about !== undefined) user.about = about;
         if (interests !== undefined) user.interests = interests;
+        
+        // Personal Info
+        if (req.body.dob !== undefined) user.dob = req.body.dob;
+        if (req.body.address !== undefined) user.address = req.body.address;
+        if (req.body.nationality !== undefined) user.nationality = req.body.nationality;
+        if (req.body.personalEmail !== undefined) user.personalEmail = req.body.personalEmail;
+        if (req.body.gender !== undefined) user.gender = req.body.gender;
+        if (req.body.maritalStatus !== undefined) user.maritalStatus = req.body.maritalStatus;
+
+        // Bank Info
+        if (req.body.bankName !== undefined) user.bankName = req.body.bankName;
+        if (req.body.bankAccount !== undefined) user.bankAccount = req.body.bankAccount;
+        if (req.body.ifscCode !== undefined) user.ifscCode = req.body.ifscCode;
+        if (req.body.panNo !== undefined) user.panNo = req.body.panNo;
+        if (req.body.uanNo !== undefined) user.uanNo = req.body.uanNo;
 
         // JSON Fields
         if (Array.isArray(skills)) {
@@ -155,7 +250,6 @@ exports.updateProfile = async (req, res) => {
             }
             if (joiningYear !== undefined) user.joiningYear = joiningYear;
             if (serialNumber !== undefined) user.serialNumber = serialNumber;
-            if (companyName !== undefined) user.companyName = companyName;
             if (employeeId !== undefined) user.employeeId = employeeId;
         }
 

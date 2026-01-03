@@ -12,9 +12,7 @@ const Signup = () => {
     name: '',
     email: '',
     phone: '',
-    role: 'Employee',
-    password: '',
-    confirmPassword: ''
+    role: 'Employee'
   });
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -28,10 +26,6 @@ const Signup = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (formData.password !== formData.confirmPassword) {
-      alert("Passwords do not match");
-      return;
-    }
 
     try {
       await createEmployee(formData);
@@ -124,52 +118,13 @@ const Signup = () => {
 
 
 
-        <div className="relative">
-          <label className="block text-gray-700 text-sm font-semibold mb-1" htmlFor="password">
-            Password
-          </label>
-          <div className="relative">
-            <input
-              type={showPassword ? "text" : "password"}
-              id="password"
-              name="password"
-              value={formData.password}
-              onChange={handleChange}
-              className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all"
-              required
-            />
-            <button
-              type="button"
-              onClick={() => setShowPassword(!showPassword)}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
-            >
-              {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-            </button>
-          </div>
-        </div>
-
-        <div className="relative">
-          <label className="block text-gray-700 text-sm font-semibold mb-1" htmlFor="confirmPassword">
-            Confirm Password
-          </label>
-          <div className="relative">
-            <input
-              type={showConfirmPassword ? "text" : "password"}
-              id="confirmPassword"
-              name="confirmPassword"
-              value={formData.confirmPassword}
-              onChange={handleChange}
-              className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all"
-              required
-            />
-            <button
-              type="button"
-              onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
-            >
-              {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-            </button>
-          </div>
+        <div className="bg-blue-50 p-4 rounded-lg text-sm text-blue-800 border border-blue-200">
+          <p className="font-semibold">Note:</p>
+          <ul className="list-disc ml-4 mt-1 space-y-1">
+            <li>Employee ID will be auto-generated based on the name and joining year.</li>
+            <li>Default System Password: <span className="font-mono font-bold">12341234</span></li>
+            <li>The employee can change their password after their first login.</li>
+          </ul>
         </div>
 
         <button

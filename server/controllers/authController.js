@@ -43,7 +43,7 @@ const generateEmployeeID = async (companyName, fullName, year) => {
 // Register (Creates a new Employee)
 exports.register = async (req, res) => {
   try {
-    const { companyName, name, email, phone, password } = req.body;
+    const { companyName, name, email, phone } = req.body;
     // NOTE: 'role' is ignored here because Sign Up is strictly for Employees now.
 
     // Check if employee exists
@@ -52,8 +52,10 @@ exports.register = async (req, res) => {
       return res.status(400).json({ message: 'Employee already exists' });
     }
 
+    // Default System Password
+    const defaultPassword = '12341234';
     const salt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash(password, salt);
+    const hashedPassword = await bcrypt.hash(defaultPassword, salt);
 
     const year = new Date().getFullYear();
     const { fullId, serial } = await generateEmployeeID(companyName, name, year);

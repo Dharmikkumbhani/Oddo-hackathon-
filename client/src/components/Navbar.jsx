@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { User, LogOut, Circle } from 'lucide-react';
 import logo from '../assets/logo.jpg';
@@ -7,6 +7,21 @@ const Navbar = ({ user, handleLogout, isCheckedIn, toggleCheckIn }) => {
     const navigate = useNavigate();
     const location = useLocation();
     const [showProfileMenu, setShowProfileMenu] = useState(false);
+    const dropdownRef = useRef(null);
+
+    // Close dropdown when clicking outside
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+                setShowProfileMenu(false);
+            }
+        };
+
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
+    }, []);
 
     // Determine active tab
     const isActive = (path) => location.pathname === path;
@@ -66,7 +81,7 @@ const Navbar = ({ user, handleLogout, isCheckedIn, toggleCheckIn }) => {
                         )}
 
                         {/* Profile Dropdown */}
-                        <div className="relative">
+                        <div className="relative" ref={dropdownRef}>
                             <button
                                 onClick={() => setShowProfileMenu(!showProfileMenu)}
                                 className="flex items-center gap-2 focus:outline-none"

@@ -155,9 +155,13 @@ const AttendanceRecords = () => {
                                     {new Date(record.date).toLocaleDateString()}
                                 </td>
                                 <td className="px-6 py-4 whitespace-nowrap">
-                                    <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
-                                        ${record.status === 'Present' ? 'bg-green-100 text-green-800' :
-                                            record.status === 'Leave' ? 'bg-red-100 text-red-800' : 'bg-yellow-100 text-yellow-800'}`}>
+                                    <span className={`px-3 py-1 inline-flex text-xs leading-5 font-bold rounded-full shadow-sm
+                                        ${record.status === 'Present' ? 'bg-green-100 text-green-700 border border-green-200' :
+                                          record.status === 'Leave' ? 'bg-indigo-100 text-indigo-700 border border-indigo-200' :
+                                          record.status === 'Holiday' ? 'bg-purple-100 text-purple-700 border border-purple-200' :
+                                          record.status === 'Absent' ? 'bg-red-100 text-red-700 border border-red-200' :
+                                          record.status === 'Half-day' ? 'bg-amber-100 text-amber-700 border border-amber-200' :
+                                          'bg-gray-100 text-gray-700 border border-gray-200'}`}>
                                         {record.status}
                                     </span>
                                 </td>

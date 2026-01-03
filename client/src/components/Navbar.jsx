@@ -27,7 +27,7 @@ const Navbar = ({ user, handleLogout, isCheckedIn, toggleCheckIn }) => {
     const isActive = (path) => location.pathname === path;
 
     return (
-        <div className="bg-white border-b border-gray-200 shadow-sm sticky top-0 z-50 font-sans">
+        <div className="bg-white/80 backdrop-blur-md border-b border-slate-200/60 shadow-sm sticky top-0 z-50 font-sans transition-all duration-300">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="flex justify-between items-center h-16">
                     {/* Left: Company Logo */}
@@ -37,34 +37,29 @@ const Navbar = ({ user, handleLogout, isCheckedIn, toggleCheckIn }) => {
                     </div>
 
                     {/* Center: Navigation Links */}
-                    <div className="hidden md:flex space-x-8">
-                        <button
-                            onClick={() => navigate('/attendance')}
-                            className={`${isActive('/attendance') || isActive('/dashboard')
-                                    ? 'border-blue-500 text-gray-900'
-                                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                                } inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium transition-colors duration-200`}
-                        >
-                            Employees
-                        </button>
-                        <button
-                            onClick={() => navigate('/attendance-records')} // Placeholder
-                            className={`${isActive('/attendance-records')
-                                    ? 'border-blue-500 text-gray-900'
-                                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                                } inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium transition-colors duration-200`}
-                        >
-                            Attendance
-                        </button>
-                        <button
-                            onClick={() => navigate('/leaves')}
-                            className={`${isActive('/leaves')
-                                    ? 'border-blue-500 text-gray-900'
-                                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                                } inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium transition-colors duration-200`}
-                        >
-                            Time Off
-                        </button>
+                    <div className="hidden md:flex space-x-2">
+                        {[
+                            { path: '/attendance', label: 'Employees', matches: ['/attendance', '/dashboard'] },
+                            { path: '/attendance-records', label: 'Attendance', matches: ['/attendance-records'] },
+                            { path: '/leaves', label: 'Time Off', matches: ['/leaves'] }
+                        ].map((item) => {
+                            const active = item.matches.some(m => location.pathname === m);
+                            return (
+                                <button
+                                    key={item.path}
+                                    onClick={() => navigate(item.path)}
+                                    className={`
+                                        relative px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 ease-out
+                                        ${active 
+                                            ? 'text-white bg-gradient-to-r from-blue-600 to-indigo-600 shadow-md shadow-blue-200' 
+                                            : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100/80 hover:shadow-sm'
+                                        }
+                                    `}
+                                >
+                                    {item.label}
+                                </button>
+                            );
+                        })}
                     </div>
 
                     {/* Right: Status & Profile */}
@@ -84,9 +79,9 @@ const Navbar = ({ user, handleLogout, isCheckedIn, toggleCheckIn }) => {
                         <div className="relative" ref={dropdownRef}>
                             <button
                                 onClick={() => setShowProfileMenu(!showProfileMenu)}
-                                className="flex items-center gap-2 focus:outline-none"
+                                className="flex items-center gap-2 focus:outline-none group"
                             >
-                                <div className="h-9 w-9 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white font-bold shadow-md transform hover:scale-105 transition-all">
+                                <div className="h-9 w-9 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white font-bold shadow-md transform transition-all duration-300 group-hover:scale-110 group-hover:shadow-blue-200 group-hover:ring-4 group-hover:ring-blue-50">
                                     {user?.name ? user.name.charAt(0).toUpperCase() : 'U'}
                                 </div>
                             </button>

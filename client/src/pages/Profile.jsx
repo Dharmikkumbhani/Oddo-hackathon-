@@ -187,22 +187,28 @@ const Profile = () => {
         <div className="bg-gray-50 min-h-screen font-sans text-gray-800">
 
             <div className="max-w-6xl mx-auto p-6">
-                <div className="bg-white border rounded-lg shadow-sm mb-6">
-                    <div className="p-4 border-b flex justify-between items-center">
-                        <h2 className="text-xl font-semibold italic">
+            {/* Profile Header Card */}
+            <div className="bg-white border border-slate-100 rounded-2xl shadow-xl shadow-slate-200/60 mb-8 overflow-hidden transition-all hover:shadow-2xl hover:shadow-slate-200/40">
+                    <div className="px-8 py-6 border-b border-slate-100 flex justify-between items-center bg-gradient-to-r from-slate-50/80 to-white">
+                        <h2 className="text-2xl font-bold text-slate-800 tracking-tight">
                             {id ? `${profile.name || 'Employee'}'s Profile` : 'My Profile'}
                         </h2>
                         {!isEditing ? (
-                            <button onClick={() => setIsEditing(true)} className="text-blue-600 hover:underline">Edit</button>
+                            <button 
+                                onClick={() => setIsEditing(true)} 
+                                className="px-4 py-2 bg-white border border-slate-200 text-slate-600 rounded-lg hover:bg-slate-50 hover:text-blue-600 hover:border-blue-200 transition-all font-medium text-sm shadow-sm"
+                            >
+                                Edit Profile
+                            </button>
                         ) : (
-                            <div className="space-x-2">
-                                <button type="button" onClick={saveProfile} className="text-green-600 hover:underline font-bold">Save</button>
-                                <button type="button" onClick={() => { setIsEditing(false); fetchProfile(); }} className="text-red-500 hover:underline">Cancel</button>
+                            <div className="space-x-3">
+                                <button type="button" onClick={saveProfile} className="px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg shadow-md shadow-green-200 transition-all font-medium text-sm">Save Changes</button>
+                                <button type="button" onClick={() => { setIsEditing(false); fetchProfile(); }} className="px-4 py-2 bg-white border border-gray-200 text-gray-600 hover:bg-red-50 hover:text-red-600 hover:border-red-200 rounded-lg transition-all font-medium text-sm">Cancel</button>
                             </div>
                         )}
                     </div>
-
-                    <div className="p-6 grid grid-cols-1 md:grid-cols-3 gap-8">
+                    
+                    <div className="p-8 grid grid-cols-1 md:grid-cols-3 gap-10">
                         {/* Avatar Section */}
                         <div className="flex flex-col items-center justify-center md:col-span-1">
                             <div className="w-32 h-32 rounded-full bg-gray-100 flex items-center justify-center relative mb-4 shadow-sm border-4 border-white overflow-hidden">
@@ -249,71 +255,76 @@ const Profile = () => {
                         </div>
 
                         {/* Basic Info Grid */}
-                        <div className="md:col-span-2 grid grid-cols-2 gap-x-8 gap-y-4 text-sm">
-                            <div className="flex flex-col border-b pb-1">
-                                <span className="text-gray-500 text-xs">Login ID</span>
-                                <span className="font-medium">{profile.employeeId || 'N/A'}</span>
+                        <div className="md:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-6 text-sm">
+                            <div className="group">
+                                <span className="block text-slate-400 text-xs uppercase tracking-wider font-semibold mb-1">Login ID</span>
+                                <div className="font-medium text-slate-700 bg-slate-50/50 rounded-lg px-3 py-2 border border-transparent">
+                                    {profile.employeeId || 'N/A'}
+                                </div>
                             </div>
-                            <div className="flex flex-col border-b pb-1">
-                                <span className="text-gray-500 text-xs">Company</span>
+                            
+                            <div className="group">
+                                <span className="block text-slate-400 text-xs uppercase tracking-wider font-semibold mb-1">Company</span>
                                 <input
                                     disabled={!isEditing}
                                     value={profile.companyName || ''}
                                     onChange={(e) => handleChange('companyName', e.target.value)}
-                                    className={`font-medium w-full bg-transparent outline-none ${isEditing ? 'border-b border-blue-200' : ''}`}
+                                    className={`font-medium text-slate-800 w-full rounded-lg px-3 py-2 outline-none transition-all ${isEditing ? 'bg-white border border-slate-200 focus:border-blue-400 focus:ring-2 focus:ring-blue-100' : 'bg-transparent border border-transparent'}`}
                                     placeholder="Company Name"
                                 />
                             </div>
 
-                            <div className="flex flex-col border-b pb-1">
-                                <span className="text-gray-500 text-xs">Email</span>
+                            <div className="group">
+                                <span className="block text-slate-400 text-xs uppercase tracking-wider font-semibold mb-1">Email</span>
                                 <input
                                     disabled={!isEditing}
                                     value={profile.email || ''}
                                     onChange={(e) => handleChange('email', e.target.value)}
-                                    className={`font-medium w-full bg-transparent outline-none ${isEditing ? 'border-b border-blue-200' : ''}`}
+                                    className={`font-medium text-slate-800 w-full rounded-lg px-3 py-2 outline-none transition-all ${isEditing ? 'bg-white border border-slate-200 focus:border-blue-400 focus:ring-2 focus:ring-blue-100' : 'bg-transparent border border-transparent'}`}
                                     placeholder="Email"
                                 />
                             </div>
-                            <div className="flex flex-col border-b pb-1">
-                                <span className="text-gray-500 text-xs">Department</span>
+                            
+                            <div className="group">
+                                <span className="block text-slate-400 text-xs uppercase tracking-wider font-semibold mb-1">Department</span>
                                 <input
                                     disabled={!isEditing || !canEditSalary} // Admin/HR only
                                     value={profile.department || ''}
                                     onChange={(e) => handleChange('department', e.target.value)}
-                                    className={`font-medium w-full bg-transparent outline-none ${isEditing && canEditSalary ? 'border-b border-blue-200' : ''}`}
+                                    className={`font-medium text-slate-800 w-full rounded-lg px-3 py-2 outline-none transition-all ${isEditing && canEditSalary ? 'bg-white border border-slate-200 focus:border-blue-400 focus:ring-2 focus:ring-blue-100' : 'bg-transparent border border-transparent'}`}
                                     placeholder="-"
                                 />
                             </div>
 
-                            <div className="flex flex-col border-b pb-1">
-                                <span className="text-gray-500 text-xs">Mobile</span>
+                            <div className="group">
+                                <span className="block text-slate-400 text-xs uppercase tracking-wider font-semibold mb-1">Mobile</span>
                                 <input
                                     disabled={!isEditing}
                                     value={profile.phone || ''}
                                     onChange={(e) => handleChange('phone', e.target.value)}
-                                    className={`font-medium w-full bg-transparent outline-none ${isEditing ? 'border-b border-blue-200' : ''}`}
+                                    className={`font-medium text-slate-800 w-full rounded-lg px-3 py-2 outline-none transition-all ${isEditing ? 'bg-white border border-slate-200 focus:border-blue-400 focus:ring-2 focus:ring-blue-100' : 'bg-transparent border border-transparent'}`}
                                     placeholder="-"
                                 />
                             </div>
-                            <div className="flex flex-col border-b pb-1">
-                                <span className="text-gray-500 text-xs">Manager</span>
+                            
+                            <div className="group">
+                                <span className="block text-slate-400 text-xs uppercase tracking-wider font-semibold mb-1">Manager</span>
                                 <input
                                     disabled={!isEditing || !canEditSalary}
                                     value={profile.manager || ''}
                                     onChange={(e) => handleChange('manager', e.target.value)}
-                                    className={`font-medium w-full bg-transparent outline-none ${isEditing && canEditSalary ? 'border-b border-blue-200' : ''}`}
+                                    className={`font-medium text-slate-800 w-full rounded-lg px-3 py-2 outline-none transition-all ${isEditing && canEditSalary ? 'bg-white border border-slate-200 focus:border-blue-400 focus:ring-2 focus:ring-blue-100' : 'bg-transparent border border-transparent'}`}
                                     placeholder="-"
                                 />
                             </div>
 
-                            <div className="flex flex-col border-b pb-1">
-                                <span className="text-gray-500 text-xs">Location</span>
+                            <div className="group">
+                                <span className="block text-slate-400 text-xs uppercase tracking-wider font-semibold mb-1">Location</span>
                                 <input
                                     disabled={!isEditing}
                                     value={profile.location || ''}
                                     onChange={(e) => handleChange('location', e.target.value)}
-                                    className={`font-medium w-full bg-transparent outline-none ${isEditing ? 'border-b border-blue-200' : ''}`}
+                                    className={`font-medium text-slate-800 w-full rounded-lg px-3 py-2 outline-none transition-all ${isEditing ? 'bg-white border border-slate-200 focus:border-blue-400 focus:ring-2 focus:ring-blue-100' : 'bg-transparent border border-transparent'}`}
                                     placeholder="-"
                                 />
                             </div>
@@ -321,7 +332,7 @@ const Profile = () => {
                     </div>
 
                     {/* Tabs */}
-                    <div className="flex px-6 border-b overflow-x-auto">
+                    <div className="flex px-8 border-b border-slate-100 overflow-x-auto gap-6">
                         {['Resume', 'Private Info', 'Salary Info', 'Security'].map(tab => {
                             const tabKey = tab.toLowerCase().replace(' ', '');
                             const realKey = tab === 'Salary Info' ? 'salary' : tab === 'Private Info' ? 'private' : tab.toLowerCase();
@@ -332,7 +343,7 @@ const Profile = () => {
                                 <button
                                     key={realKey}
                                     onClick={() => setActiveTab(realKey)}
-                                    className={`py-2 px-4 font-medium border-b-2 transition-colors whitespace-nowrap ${activeTab === realKey ? 'border-black text-black' : 'border-transparent text-gray-500 hover:text-gray-700'}`}
+                                    className={`py-4 px-1 font-medium border-b-2 transition-all duration-200 whitespace-nowrap text-sm tracking-wide ${activeTab === realKey ? 'border-blue-600 text-blue-600' : 'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300'}`}
                                 >
                                     {tab}
                                 </button>
@@ -347,38 +358,40 @@ const Profile = () => {
                     {activeTab === 'resume' && (
                         <>
                             {/* Left Column: About, Interests */}
-                            <div className="md:col-span-1 space-y-6">
-                                <div className="bg-white p-4 rounded-lg border shadow-sm h-full">
-                                    <div className="flex justify-between items-center mb-2">
-                                        <h3 className="font-semibold italic">About</h3>
+                                    <div className="md:col-span-1 space-y-6">
+                                <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-lg shadow-slate-200/50 h-full flex flex-col">
+                                    <div className="flex justify-between items-center mb-4">
+                                        <h3 className="font-bold text-slate-800 tracking-tight">About</h3>
                                     </div>
-                                    <textarea
-                                        disabled={!isEditing}
-                                        value={profile.about || ''}
-                                        onChange={(e) => handleChange('about', e.target.value)}
-                                        className="w-full h-32 text-sm text-gray-600 resize-none outline-none border-none bg-transparent"
-                                        placeholder="Brief description about yourself..."
-                                    />
+                                    <div className="flex-grow">
+                                        <textarea
+                                            disabled={!isEditing}
+                                            value={profile.about || ''}
+                                            onChange={(e) => handleChange('about', e.target.value)}
+                                            className={`w-full h-32 text-sm text-slate-600 resize-none outline-none border rounded-xl p-3 bg-slate-50/50 transition-all ${isEditing ? 'focus:bg-white focus:border-blue-400 focus:ring-2 focus:ring-blue-100' : 'border-transparent'}`}
+                                            placeholder="Write a brief description about yourself..."
+                                        />
+                                    </div>
 
-                                    <div className="mt-6">
-                                        <h3 className="font-semibold italic mb-2">My interests and hobbies</h3>
+                                    <div className="mt-8">
+                                        <h3 className="font-bold text-slate-800 tracking-tight mb-3">Interests & Hobbies</h3>
                                         <textarea
                                             disabled={!isEditing}
                                             value={profile.interests || ''}
                                             onChange={(e) => handleChange('interests', e.target.value)}
-                                            className="w-full h-24 text-sm text-gray-600 resize-none outline-none border-none bg-transparent"
-                                            placeholder="Interests..."
+                                            className={`w-full h-24 text-sm text-slate-600 resize-none outline-none border rounded-xl p-3 bg-slate-50/50 transition-all ${isEditing ? 'focus:bg-white focus:border-blue-400 focus:ring-2 focus:ring-blue-100' : 'border-transparent'}`}
+                                            placeholder="Sharing your interests helps colleagues get to know you better..."
                                         />
                                     </div>
 
-                                    <div className="mt-6">
-                                        <h3 className="font-semibold italic mb-2">What I love about my job</h3>
+                                    <div className="mt-8">
+                                        <h3 className="font-bold text-slate-800 tracking-tight mb-3">What I Love About My Job</h3>
                                         <textarea
                                             disabled={!isEditing}
                                             value={profile.loveJob || ''}
                                             onChange={(e) => handleChange('loveJob', e.target.value)}
-                                            className="w-full h-24 text-sm text-gray-600 resize-none outline-none border-none bg-transparent"
-                                            placeholder="..."
+                                            className={`w-full h-24 text-sm text-slate-600 resize-none outline-none border rounded-xl p-3 bg-slate-50/50 transition-all ${isEditing ? 'focus:bg-white focus:border-blue-400 focus:ring-2 focus:ring-blue-100' : 'border-transparent'}`}
+                                            placeholder="Share what motivates you..."
                                         />
                                     </div>
                                 </div>
@@ -386,42 +399,74 @@ const Profile = () => {
 
                             {/* Right Column: Skills, Certification */}
                             <div className="md:col-span-2 space-y-6">
-                                <div className="bg-white p-4 rounded-lg border shadow-sm">
-                                    <h3 className="font-semibold border-b pb-2 mb-2">Skills</h3>
-                                    <div className="space-y-2">
+                                <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-lg shadow-slate-200/50">
+                                    <h3 className="font-bold text-slate-800 border-b border-slate-100 pb-4 mb-4">Skills</h3>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                         {Array.isArray(profile.skills) && profile.skills.map((skill, index) => (
-                                            <div key={index} className="flex gap-2">
+                                            <div key={index} className="flex gap-2 items-center group">
                                                 <input
                                                     disabled={!isEditing}
                                                     value={skill}
                                                     onChange={(e) => handleArrayChange('skills', index, e.target.value)}
-                                                    className="border p-1 text-sm w-full rounded focus:border-blue-500 outline-none"
+                                                    className={`border-0 bg-slate-50 rounded-lg p-3 text-sm w-full outline-none font-medium text-slate-700 transition-all ${isEditing ? 'hover:bg-slate-100 focus:bg-white focus:ring-2 focus:ring-blue-100 shadow-sm' : ''}`}
                                                     placeholder="Skill name"
                                                 />
-                                                {isEditing && <button type="button" onClick={() => removeArrayItem('skills', index)} className="text-red-500">x</button>}
+                                                {isEditing && (
+                                                    <button 
+                                                        type="button" 
+                                                        onClick={() => removeArrayItem('skills', index)} 
+                                                        className="text-slate-400 hover:text-red-500 p-2 rounded-full hover:bg-red-50 transition-colors opacity-0 group-hover:opacity-100"
+                                                    >
+                                                        x
+                                                    </button>
+                                                )}
                                             </div>
                                         ))}
-                                        {isEditing && <button type="button" onClick={() => addArrayItem('skills')} className="text-sm text-blue-500 hover:underline">+ Add Skills</button>}
                                     </div>
+                                    {isEditing && (
+                                        <button 
+                                            type="button" 
+                                            onClick={() => addArrayItem('skills')} 
+                                            className="mt-4 flex items-center gap-2 text-sm font-semibold text-blue-600 hover:text-blue-700 px-4 py-2 rounded-lg hover:bg-blue-50 transition-colors border border-dashed border-blue-200 hover:border-blue-300 w-full justify-center"
+                                        >
+                                            + Add New Skill
+                                        </button>
+                                    )}
                                 </div>
 
-                                <div className="bg-white p-4 rounded-lg border shadow-sm">
-                                    <h3 className="font-semibold border-b pb-2 mb-2">Certification</h3>
-                                    <div className="space-y-2">
+                                <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-lg shadow-slate-200/50">
+                                    <h3 className="font-bold text-slate-800 border-b border-slate-100 pb-4 mb-4">Certifications</h3>
+                                    <div className="space-y-3">
                                         {Array.isArray(profile.certifications) && profile.certifications.map((cert, index) => (
-                                            <div key={index} className="flex gap-2">
+                                            <div key={index} className="flex gap-2 items-center group">
                                                 <input
                                                     disabled={!isEditing}
                                                     value={cert}
                                                     onChange={(e) => handleArrayChange('certifications', index, e.target.value)}
-                                                    className="border p-1 text-sm w-full rounded focus:border-blue-500 outline-none"
-                                                    placeholder="Certification name"
+                                                    className={`border-0 bg-slate-50 rounded-lg p-3 text-sm w-full outline-none font-medium text-slate-700 transition-all ${isEditing ? 'hover:bg-slate-100 focus:bg-white focus:ring-2 focus:ring-blue-100 shadow-sm' : ''}`}
+                                                    placeholder="Certification Name"
                                                 />
-                                                {isEditing && <button type="button" onClick={() => removeArrayItem('certifications', index)} className="text-red-500">x</button>}
+                                                {isEditing && (
+                                                    <button 
+                                                        type="button" 
+                                                        onClick={() => removeArrayItem('certifications', index)} 
+                                                        className="text-slate-400 hover:text-red-500 p-2 rounded-full hover:bg-red-50 transition-colors opacity-0 group-hover:opacity-100"
+                                                    >
+                                                        x
+                                                    </button>
+                                                )}
                                             </div>
                                         ))}
-                                        {isEditing && <button type="button" onClick={() => addArrayItem('certifications')} className="text-sm text-blue-500 hover:underline">+ Add Certification</button>}
                                     </div>
+                                    {isEditing && (
+                                        <button 
+                                            type="button" 
+                                            onClick={() => addArrayItem('certifications')} 
+                                            className="mt-4 flex items-center gap-2 text-sm font-semibold text-blue-600 hover:text-blue-700 px-4 py-2 rounded-lg hover:bg-blue-50 transition-colors border border-dashed border-blue-200 hover:border-blue-300 w-full justify-center"
+                                        >
+                                            + Add Certification
+                                        </button>
+                                    )}
                                 </div>
                             </div>
                         </>

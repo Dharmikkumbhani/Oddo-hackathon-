@@ -27,6 +27,10 @@ const Attendance = () => {
         };
 
         fetchEmployees();
+
+        const handleUpdate = () => fetchEmployees();
+        window.addEventListener('attendanceUpdated', handleUpdate);
+        return () => window.removeEventListener('attendanceUpdated', handleUpdate);
     }, []);
 
     const getRandomStatus = (empId) => {
@@ -45,18 +49,21 @@ const Attendance = () => {
     );
 
     const getStatusForEmployee = (emp) => {
+        // Now using API data for everyone
+        // If we are the current user, we might want to prefer local isCheckedIn state 
+        // for immediate feedback, but the API fetch listener above handles it too.
         if (user && emp.email === user.email) {
-            return isCheckedIn ? 'present' : 'absent';
+            return isCheckedIn ? 'Present' : (emp.status || 'Absent');
         }
-        return emp.status || getRandomStatus(emp.id);
+        return emp.status || 'Absent'; // Default to Absent if no status
     };
 
     const getStatusColor = (status) => {
         switch (status) {
-            case 'present': return 'bg-green-500';
-            case 'leave': return 'bg-blue-400';
-            case 'absent': return 'bg-yellow-400';
-            default: return 'bg-gray-300';
+            case 'Present': return 'bg-green-500';
+            case 'Leave': return 'bg-blue-400';
+            case 'Absent': return 'bg-yellow-400';
+            default: return 'bg-yellow-400'; // Default pending/absent
         }
     };
 

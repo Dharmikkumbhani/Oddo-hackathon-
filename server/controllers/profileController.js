@@ -68,10 +68,12 @@ exports.getProfile = async (req, res) => {
 
 // Get All Profiles
 // GET /api/profile
+// Get All Profiles
+// GET /api/profile
 exports.getAllProfiles = async (req, res) => {
     try {
-        const users = await User.findAll({
-            attributes: ['id', 'name', 'email', 'role', 'department', 'location', 'phone', 'employeeId']
+        const users = await Employee.findAll({
+            attributes: ['id', 'name', 'email', 'department', 'location', 'phone', 'employeeId']
         });
         res.json(users);
     } catch (error) {

@@ -10,6 +10,7 @@ const Signup = () => {
     name: '',
     email: '',
     phone: '',
+    role: 'Employee', // Default role
     password: '',
     confirmPassword: ''
   });
@@ -115,6 +116,23 @@ const Signup = () => {
             onChange={handleChange}
             className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all"
           />
+        </div>
+
+        <div>
+           <label className="block text-gray-700 text-sm font-semibold mb-1" htmlFor="role">
+            Role
+          </label>
+          <select
+            id="role"
+            name="role"
+            value={formData.role}
+            onChange={handleChange}
+            className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all bg-white"
+          >
+            <option value="Employee">Employee</option>
+            <option value="HR">HR Officer</option>
+            <option value="Admin">Admin</option>
+          </select>
         </div>
 
         <div className="relative">

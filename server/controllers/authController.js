@@ -72,7 +72,7 @@ exports.register = async (req, res) => {
       phone,
       password: hashedPassword,
       employeeId: fullId,
-      role: role || 'Admin', // Default to Admin for this signup flow
+      role: role || 'Employee', // Default to Employee, but respect user choice (Admin/HR)
       joiningYear: year,
       serialNumber: serial
     });
@@ -114,6 +114,10 @@ exports.login = async (req, res) => {
 
     if (!user) {
       return res.status(400).json({ message: 'Invalid Credentials' });
+    }
+
+    if (req.body.role && user.role !== req.body.role) {
+      return res.status(400).json({ message: `Access Denied: You are not an ${req.body.role}` });
     }
 
     const isMatch = await bcrypt.compare(password, user.password);

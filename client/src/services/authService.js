@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_URL = 'http://localhost:5000/api/auth';
+const API_URL = 'http://localhost:5001/api/auth';
 
 export const registerUser = async (userData) => {
   const response = await axios.post(`${API_URL}/register`, userData);
@@ -23,5 +23,6 @@ export const logout = () => {
 };
 
 export const getCurrentUser = () => {
-  return JSON.parse(localStorage.getItem('user'));
+  const data = JSON.parse(localStorage.getItem('user'));
+  return data?.user;
 };

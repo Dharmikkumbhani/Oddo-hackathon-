@@ -5,6 +5,7 @@ import { loginUser } from '../services/authService';
 
 const Login = () => {
   const [formData, setFormData] = useState({
+    role: 'Employee', // Default
     identifier: '',
     password: ''
   });
@@ -40,6 +41,30 @@ const Login = () => {
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-6">
+        <div>
+           <label className="block text-gray-700 text-sm font-semibold mb-2" htmlFor="role">
+            Select Role
+          </label>
+          <div className="relative">
+            <select
+              id="role"
+              name="role"
+              value={formData.role}
+              onChange={handleChange}
+              className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all bg-white appearance-none cursor-pointer"
+            >
+              <option value="Employee">Employee</option>
+              <option value="HR">HR Officer</option>
+              <option value="Admin">Admin</option>
+            </select>
+            <div className="absolute inset-y-0 right-0 flex items-center px-4 pointer-events-none text-gray-500">
+              <svg className="w-4 h-4 fill-current" viewBox="0 0 20 20">
+                <path d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" />
+              </svg>
+            </div>
+          </div>
+        </div>
+
         <div>
           <label className="block text-gray-700 text-sm font-semibold mb-2" htmlFor="identifier">
             Login Id / Email

@@ -26,6 +26,7 @@ function App() {
           <Route path="/attendance" element={<Attendance />} />
           <Route path="/attendance-records" element={<AttendanceRecords />} />
           <Route path="/profile" element={<Profile />} />
+          <Route path="/profile/:id" element={<Profile />} />
         </Route>
 
         <Route path="/" element={<Navigate to="/login" replace />} />

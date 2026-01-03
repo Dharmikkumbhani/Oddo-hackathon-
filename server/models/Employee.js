@@ -31,7 +31,29 @@ const Employee = sequelize.define('Employee', {
     type: DataTypes.STRING,
     unique: true,
   },
-  // Removed 'role' field as table implies role
+  // New Fields for Profile
+  jobPosition: {
+    type: DataTypes.STRING,
+  },
+  salaryDetails: {
+    type: DataTypes.JSON, // Stores { monthlyWage, config: {}, computed: {} }
+    defaultValue: {},
+  },
+  skills: {
+    type: DataTypes.JSON, // Stores Array of strings
+    defaultValue: [],
+  },
+  certifications: {
+    type: DataTypes.JSON, // Stores Array of strings
+    defaultValue: [],
+  },
+  interests: {
+    type: DataTypes.TEXT, // Changed to TEXT as we are using a textarea in UI now
+  },
+  loveJob: {
+    type: DataTypes.TEXT, // "What I love about my job"
+  },
+  // Existing fields
   joiningYear: {
     type: DataTypes.INTEGER,
   },

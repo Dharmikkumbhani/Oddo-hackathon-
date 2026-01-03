@@ -3,56 +3,29 @@ const Admin = require('../models/Admin');
 const HR = require('../models/HR');
 const Attendance = require('../models/Attendance');
 
-// Helper to find user by ID and Role
 const findUserByRole = async (id, role) => {
     if (role === 'Admin') return await Admin.findByPk(id);
     if (role === 'HR') return await HR.findByPk(id);
     return await Employee.findByPk(id);
 };
 
-// Get Profile
-// GET /api/profile/:id (or /me)
 exports.getProfile = async (req, res) => {
     try {
         let user;
         const isMe = req.params.id === 'me';
-
         if (isMe) {
-            // Use logged-in user's role
             user = await findUserByRole(req.user.id, req.user.role);
         } else {
-            // If viewing someone else, we assume it's an Employee profile
-            // (Admins/HRs viewing employees)
             user = await Employee.findByPk(req.params.id);
         }
 
-        if (!user) {
-            return res.status(404).json({ message: 'User not found' });
-        }
+        if (!user) return res.status(404).json({ message: 'User not found' });
 
         let profileData = user.toJSON();
-        // If retrieving an Employee profile (either by Me or by ID)
-        // Check visibility rules
-        // Admin sees everything.
-        // Owner sees everything.
-        // Others might see limited data (e.g. HR sees non-salary?)
 
-        // Simple check: is this an Employee object? (It has 'email', 'name', etc.)
-        // Admin/HR objects are simple.
-
+        // Security filtering
         if (req.user.role !== 'Admin' && (!isMe || req.user.role !== 'Employee')) {
-            // Hide salary from non-admins (unless it's their own profile?)
-            // Actually, usually Employees can see their OWN salary.
-            // Other employees viewing this profile? Not allowed usually.
-
-            // Logic:
-            // If Viewer is Admin: See All.
-            // If Viewer is Owner (Me): See All.
-            // If Viewer is HR: See Most (Maybe hide salary if policy says so, but let's allow for now)
-            // If Viewer is unrelated Employee: Hide Salary.
-
             const isOwner = isMe || (req.user.id === user.id && req.user.role === 'Employee');
-
             if (!isOwner && req.user.role !== 'HR') {
                 delete profileData.salaryDetails;
                 delete profileData.yearlyWage;
@@ -66,11 +39,6 @@ exports.getProfile = async (req, res) => {
     }
 };
 
-
-// Get All Profiles
-// GET /api/profile
-// Get All Profiles
-// GET /api/profile
 exports.getAllProfiles = async (req, res) => {
     try {
         const today = new Date().toISOString().split('T')[0];
@@ -84,7 +52,6 @@ exports.getAllProfiles = async (req, res) => {
             }]
         });
 
-        // Flatten status
         const profiles = users.map(user => {
             const u = user.toJSON();
             const att = u.Attendances && u.Attendances[0];
@@ -100,8 +67,6 @@ exports.getAllProfiles = async (req, res) => {
     }
 };
 
-// Update Profile
-// PUT /api/profile/:id
 exports.updateProfile = async (req, res) => {
     try {
         let user;
@@ -109,62 +74,63 @@ exports.updateProfile = async (req, res) => {
 
         if (isMe) {
             user = await findUserByRole(req.user.id, req.user.role);
-            // Since Admin/HR models are simple, we probably only update Employee profiles here.
-            // But let's allow updating what exists.
         } else {
             user = await Employee.findByPk(req.params.id);
         }
 
-        if (!user) {
-            return res.status(404).json({ message: 'User not found' });
-        }
+        if (!user) return res.status(404).json({ message: 'User not found' });
 
-        // Check permissions
-        // Admin can update anyone. User can only update themselves.
-        if (req.user.role !== 'Admin' && (!isMe || req.user.id !== user.id)) {
+        // Update Permission Check:
+        // Admin: Can update any profile
+        // HR: Can update any profile? Or just Employees? Let's assume HR can update Employees.
+        // User: Can update own profile
+
+        const isOwner = (isMe || req.user.id === user.id);
+        const isAdmin = req.user.role === 'Admin';
+        const isHR = req.user.role === 'HR';
+
+        if (!isAdmin && !isHR && !isOwner) {
             return res.status(403).json({ message: 'Not authorized to update this profile' });
         }
 
-        // If it's an Admin/HR account, they only have username/password, so most of these fields won't apply.
-        // We will just try to update fields if they exist on the body.
-
-        // Only Employee model has these fields clearly defined in our setup.
-        // We can just iterate allowed fields.
-
         const {
-            name,
-            phone,
-            location,
-            about,
-            interests,
-            skills,
-            certifications,
-            // Admin only fields
-            department,
-            manager,
-            role,
-            salaryDetails,
-            joiningYear,
-            serialNumber,
-            companyName,
-            employeeId
+            name, phone, location, about, interests, skills, certifications,
+            jobPosition, loveJob,
+            department, manager, salaryDetails, joiningYear, serialNumber, companyName, employeeId
         } = req.body;
 
-        // Generic updates (if model supports them)
+        console.log(`[UPDATE PROFILE] User: ${user.id} Role: ${req.user.role}`);
+
+        // Common Fields (Anyone with write access)
         if (phone !== undefined) user.phone = phone;
         if (location !== undefined) user.location = location;
         if (about !== undefined) user.about = about;
         if (interests !== undefined) user.interests = interests;
-        if (skills !== undefined) user.skills = skills;
-        if (certifications !== undefined) user.certifications = certifications;
-        if (name !== undefined) user.name = name;
 
-        // Admin only updates
-        if (req.user.role === 'Admin') {
+        // JSON Fields
+        if (Array.isArray(skills)) {
+            user.skills = skills;
+            user.changed('skills', true);
+        }
+
+        if (Array.isArray(certifications)) {
+            user.certifications = certifications;
+            user.changed('certifications', true);
+        }
+
+        if (name !== undefined) user.name = name;
+        if (jobPosition !== undefined) user.jobPosition = jobPosition;
+        if (loveJob !== undefined) user.loveJob = loveJob;
+
+        // Elevated Privileges (Admin or HR)
+        if (isAdmin || isHR) {
             if (department !== undefined) user.department = department;
             if (manager !== undefined) user.manager = manager;
-            // role update is tricky since we split tables. skipping for now.
-            if (salaryDetails !== undefined) user.salaryDetails = salaryDetails;
+
+            if (salaryDetails !== undefined) {
+                user.salaryDetails = salaryDetails;
+                user.changed('salaryDetails', true);
+            }
             if (joiningYear !== undefined) user.joiningYear = joiningYear;
             if (serialNumber !== undefined) user.serialNumber = serialNumber;
             if (companyName !== undefined) user.companyName = companyName;
@@ -172,10 +138,11 @@ exports.updateProfile = async (req, res) => {
         }
 
         await user.save();
+        console.log('[UPDATE SUCCESS] User saved.');
 
         res.json(user);
     } catch (error) {
-        console.error(error);
+        console.error('[UPDATE ERROR]', error);
         res.status(500).json({ message: 'Server Error' });
     }
 };

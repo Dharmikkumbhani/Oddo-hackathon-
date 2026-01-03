@@ -12,7 +12,7 @@ const Attendance = () => {
 
     const { isCheckedIn } = useOutletContext();
     const user = getCurrentUser();
-    // Navbar, logout, toggleCheckIn handled by Layout
+    const navigate = useNavigate();
 
     useEffect(() => {
         const fetchEmployees = async () => {
@@ -34,7 +34,6 @@ const Attendance = () => {
     }, []);
 
     const getRandomStatus = (empId) => {
-        // Deterministic random so it doesn't flicker on re-render
         const statuses = ['present', 'absent', 'leave'];
         return statuses[empId % statuses.length];
     };
@@ -49,13 +48,10 @@ const Attendance = () => {
     );
 
     const getStatusForEmployee = (emp) => {
-        // Now using API data for everyone
-        // If we are the current user, we might want to prefer local isCheckedIn state 
-        // for immediate feedback, but the API fetch listener above handles it too.
         if (user && emp.email === user.email) {
             return isCheckedIn ? 'Present' : (emp.status || 'Absent');
         }
-        return emp.status || 'Absent'; // Default to Absent if no status
+        return emp.status || 'Absent';
     };
 
     const getStatusColor = (status) => {
@@ -63,7 +59,7 @@ const Attendance = () => {
             case 'Present': return 'bg-green-500';
             case 'Leave': return 'bg-blue-400';
             case 'Absent': return 'bg-yellow-400';
-            default: return 'bg-yellow-400'; // Default pending/absent
+            default: return 'bg-yellow-400';
         }
     };
 
@@ -117,6 +113,13 @@ const Attendance = () => {
                         </div>
                         <p className="text-gray-900 ml-8">{selectedEmployee?.location || 'Remote'}</p>
                     </div>
+
+                    <button
+                        onClick={() => navigate(`/profile/${selectedEmployee.id}`)}
+                        className="w-full bg-blue-600 text-white py-3 rounded-xl font-bold hover:bg-blue-700 transition shadow-lg mt-4"
+                    >
+                        View Full Profile & Edit Salary
+                    </button>
                 </div>
             </div>
         </div>

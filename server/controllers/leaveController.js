@@ -7,11 +7,18 @@ const applyLeave = async (req, res) => {
     const { leaveType, startDate, endDate, reason } = req.body;
     const employeeId = req.user.id; // User ID from auth middleware
 
+    // Calculate days count
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+    const diffTime = Math.abs(end - start);
+    const daysCount = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
+
     const leave = await LeaveRequest.create({
       employeeId,
       leaveType,
       startDate,
       endDate,
+      daysCount,
       reason
     });
 
@@ -41,9 +48,9 @@ const getMyLeaves = async (req, res) => {
 const getAllLeaves = async (req, res) => {
   try {
     const leaves = await LeaveRequest.findAll({
-      include: [{ 
-        model: Employee, 
-        attributes: ['name', 'department', 'employeeId'] 
+      include: [{
+        model: Employee,
+        attributes: ['name', 'department', 'employeeId']
       }],
       order: [['createdAt', 'DESC']]
     });
@@ -67,33 +74,22 @@ const updateLeaveStatus = async (req, res) => {
 
     // Logic to update leave balance if approved
     if (status === 'Approved' && leave.status !== 'Approved') {
-        const employee = await Employee.findByPk(leave.employeeId);
-        
-        if (employee) {
-            // Calculate days
-            const start = new Date(leave.startDate);
-            const end = new Date(leave.endDate);
-            const diffTime = Math.abs(end - start);
-            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1; 
+      const employee = await Employee.findByPk(leave.employeeId);
 
-            if (leave.leaveType === 'Paid') {
-                // Default to 24 if null (migration issue safety)
-                const currentBalance = employee.paidLeaveBalance !== null ? employee.paidLeaveBalance : 24;
-                if (currentBalance >= diffDays) {
-                    employee.paidLeaveBalance = currentBalance - diffDays;
-                } else {
-                     // Balance handling: still deduct or stop? 
-                     // For now, allow negative but generally this should be blocked or warned.
-                     employee.paidLeaveBalance = currentBalance - diffDays;
-                }
-            } else if (leave.leaveType === 'Sick') {
-                const currentBalance = employee.sickLeaveBalance !== null ? employee.sickLeaveBalance : 7;
-                if (currentBalance >= diffDays) {
-                    employee.sickLeaveBalance = currentBalance - diffDays;
-                }
-            }
-            await employee.save();
+      if (employee) {
+        const daysToDeduct = leave.daysCount;
+
+        if (leave.leaveType === 'Paid Time Off') {
+          const currentBalance = employee.paidLeaveBalance !== null ? employee.paidLeaveBalance : 24;
+          employee.paidLeaveBalance = currentBalance - daysToDeduct;
+        } else if (leave.leaveType === 'Sick Leave') {
+          const currentBalance = employee.sickLeaveBalance !== null ? employee.sickLeaveBalance : 7;
+          employee.sickLeaveBalance = currentBalance - daysToDeduct;
         }
+        // Unpaid Leave doesn't affect balances
+
+        await employee.save();
+      }
     }
 
     leave.status = status;

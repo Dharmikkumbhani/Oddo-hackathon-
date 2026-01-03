@@ -3,6 +3,7 @@ import Login from './pages/Login';
 import Signup from './pages/Signup';
 import Attendance from './pages/Attendance';
 import Profile from './pages/Profile';
+import Leave from './pages/Leave';
 
 import AttendanceRecords from './pages/AttendanceRecords';
 import Layout from './components/Layout';
@@ -27,6 +28,7 @@ function App() {
           <Route path="/attendance-records" element={<AttendanceRecords />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/profile/:id" element={<Profile />} />
+          <Route path="/leaves" element={<Leave />} />
         </Route>
 
         <Route path="/" element={<Navigate to="/login" replace />} />

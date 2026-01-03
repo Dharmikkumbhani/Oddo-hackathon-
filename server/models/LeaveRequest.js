@@ -17,7 +17,7 @@ const LeaveRequest = sequelize.define('LeaveRequest', {
     }
   },
   leaveType: {
-    type: DataTypes.ENUM('Paid', 'Sick', 'Unpaid'),
+    type: DataTypes.ENUM('Paid Time Off', 'Sick Leave', 'Unpaid Leave'),
     allowNull: false,
   },
   startDate: {
@@ -31,15 +31,16 @@ const LeaveRequest = sequelize.define('LeaveRequest', {
   reason: {
     type: DataTypes.TEXT,
   },
+  daysCount: {
+    type: DataTypes.FLOAT,
+    allowNull: false,
+  },
   status: {
     type: DataTypes.ENUM('Pending', 'Approved', 'Rejected'),
     defaultValue: 'Pending',
   },
   adminComment: {
     type: DataTypes.TEXT,
-  },
-  attachment: {
-    type: DataTypes.STRING, // URL or path
   }
 });
 

@@ -122,28 +122,32 @@ const Leave = () => {
                         </div>
                     </div>
 
-                    {/* NEW Button */}
-                    <div className="bg-white p-4 rounded-lg border shadow-sm flex items-center justify-between">
-                        <button
-                            onClick={() => setShowModal(true)}
-                            className="bg-purple-500 hover:bg-purple-600 text-white px-6 py-2 rounded-md font-medium transition-colors shadow-sm"
-                        >
-                            NEW
-                        </button>
-                    </div>
+                    {/* NEW Button - Only for Employees */}
+                    {!isAdminOrHR && (
+                        <div className="bg-white p-4 rounded-lg border shadow-sm flex items-center justify-between">
+                            <button
+                                onClick={() => setShowModal(true)}
+                                className="bg-purple-500 hover:bg-purple-600 text-white px-6 py-2 rounded-md font-medium transition-colors shadow-sm"
+                            >
+                                NEW
+                            </button>
+                        </div>
+                    )}
                 </div>
 
-                {/* Balance Cards (Top Section) */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-                    <div className="bg-white p-6 rounded-xl border shadow-sm">
-                        <h3 className="text-blue-500 font-medium mb-2">Paid Leave Balance</h3>
-                        <p className="text-3xl font-bold text-gray-800">{allocation.paid} <span className="text-sm text-gray-500 font-normal">Days Available</span></p>
+                {/* Balance Cards (Top Section) - Only for Employees */}
+                {!isAdminOrHR && (
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                        <div className="bg-white p-6 rounded-xl border shadow-sm">
+                            <h3 className="text-blue-500 font-medium mb-2">Paid Leave Balance</h3>
+                            <p className="text-3xl font-bold text-gray-800">{allocation.paid} <span className="text-sm text-gray-500 font-normal">Days Available</span></p>
+                        </div>
+                        <div className="bg-white p-6 rounded-xl border shadow-sm">
+                            <h3 className="text-blue-500 font-medium mb-2">Sick Leave Balance</h3>
+                            <p className="text-3xl font-bold text-gray-800">{allocation.sick} <span className="text-sm text-gray-500 font-normal">Days Available</span></p>
+                        </div>
                     </div>
-                    <div className="bg-white p-6 rounded-xl border shadow-sm">
-                        <h3 className="text-blue-500 font-medium mb-2">Sick Leave Balance</h3>
-                        <p className="text-3xl font-bold text-gray-800">{allocation.sick} <span className="text-sm text-gray-500 font-normal">Days Available</span></p>
-                    </div>
-                </div>
+                )}
 
                 {/* Table */}
                 <div className="bg-white rounded-xl border shadow-sm overflow-hidden min-h-[400px]">

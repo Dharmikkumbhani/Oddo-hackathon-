@@ -28,6 +28,21 @@ exports.getProfile = async (req, res) => {
     }
 };
 
+
+// Get All Profiles
+// GET /api/profile
+exports.getAllProfiles = async (req, res) => {
+    try {
+        const users = await User.findAll({
+            attributes: ['id', 'name', 'email', 'role', 'department', 'location', 'phone', 'employeeId']
+        });
+        res.json(users);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Server Error' });
+    }
+};
+
 // Update Profile
 // PUT /api/profile/:id
 exports.updateProfile = async (req, res) => {

@@ -21,7 +21,7 @@ const Login = () => {
     e.preventDefault();
     try {
       await loginUser(formData);
-      window.location.href = '/dashboard';
+      window.location.href = '/attendance';
     } catch (error) {
       console.error(error);
       alert(error.response?.data?.message || "Login failed");
@@ -29,7 +29,7 @@ const Login = () => {
   };
 
   return (
-    <motion.div 
+    <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       className="bg-white p-8 rounded-2xl shadow-xl w-full max-w-md border border-gray-100"
@@ -42,7 +42,7 @@ const Login = () => {
 
       <form onSubmit={handleSubmit} className="space-y-6">
         <div>
-           <label className="block text-gray-700 text-sm font-semibold mb-2" htmlFor="role">
+          <label className="block text-gray-700 text-sm font-semibold mb-2" htmlFor="role">
             Select Role
           </label>
           <div className="relative">

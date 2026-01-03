@@ -10,6 +10,12 @@ export const registerUser = async (userData) => {
   return response.data;
 };
 
+// For HR/Admin to add new employees without logging in as them
+export const createEmployee = async (userData) => {
+  const response = await axios.post(`${API_URL}/register`, userData);
+  return response.data;
+};
+
 export const loginUser = async (userData) => {
   const response = await axios.post(`${API_URL}/login`, userData);
   if (response.data.token) {

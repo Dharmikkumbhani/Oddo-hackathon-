@@ -106,12 +106,7 @@ const Login = () => {
       </form>
 
       <div className="mt-6 text-center">
-        <p className="text-gray-600 text-sm">
-          Don't have an Account?{' '}
-          <Link to="/signup" className="text-[#E855E9] font-semibold hover:underline">
-            Sign Up
-          </Link>
-        </p>
+        {/* Registration is now restricted to HR/Admin within the app */}
       </div>
     </motion.div>
   );

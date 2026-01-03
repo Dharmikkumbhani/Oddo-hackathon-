@@ -17,18 +17,17 @@ function App() {
             <Login />
           </div>
         } />
-        <Route path="/signup" element={
-          <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
-            <Signup />
-          </div>
-        } />
-
         <Route element={<Layout />}>
           <Route path="/attendance" element={<Attendance />} />
           <Route path="/attendance-records" element={<AttendanceRecords />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/profile/:id" element={<Profile />} />
           <Route path="/leaves" element={<Leave />} />
+          <Route path="/signup" element={
+            <div className="flex items-center justify-center p-4 min-h-[calc(100vh-64px)]">
+              <Signup />
+            </div>
+          } />
         </Route>
 
         <Route path="/" element={<Navigate to="/login" replace />} />

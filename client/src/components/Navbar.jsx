@@ -53,13 +53,15 @@ const Navbar = ({ user, handleLogout, isCheckedIn, toggleCheckIn }) => {
                     {/* Right: Status & Profile */}
                     <div className="flex items-center space-x-6">
                         {/* Check-in Indicator */}
-                        <div className="flex items-center" title={isCheckedIn ? "Checked In" : "Click to Check In"}>
-                            <button onClick={toggleCheckIn} className="focus:outline-none transition-transform active:scale-95 p-1 rounded-full hover:bg-gray-50">
-                                <Circle
-                                    className={`h-4 w-4 fill-current ${isCheckedIn ? 'text-green-500 drop-shadow-[0_0_4px_rgba(34,197,94,0.6)]' : 'text-red-500 drop-shadow-[0_0_4px_rgba(239,68,68,0.6)]'}`}
-                                />
-                            </button>
-                        </div>
+                        {user?.role === 'Employee' && (
+                            <div className="flex items-center" title={isCheckedIn ? "Checked In" : "Click to Check In"}>
+                                <button onClick={toggleCheckIn} className="focus:outline-none transition-transform active:scale-95 p-1 rounded-full hover:bg-gray-50">
+                                    <Circle
+                                        className={`h-4 w-4 fill-current ${isCheckedIn ? 'text-green-500 drop-shadow-[0_0_4px_rgba(34,197,94,0.6)]' : 'text-red-500 drop-shadow-[0_0_4px_rgba(239,68,68,0.6)]'}`}
+                                    />
+                                </button>
+                            </div>
+                        )}
 
                         {/* Profile Dropdown */}
                         <div className="relative">
@@ -80,17 +82,20 @@ const Navbar = ({ user, handleLogout, isCheckedIn, toggleCheckIn }) => {
                                         <p className="text-xs text-gray-400 truncate">{user?.email}</p>
                                     </div>
 
-                                    <div className="px-4 py-3">
-                                        <button
-                                            onClick={toggleCheckIn}
-                                            className={`w-full flex items-center justify-center px-4 py-2 rounded-lg text-sm font-bold transition-colors ${isCheckedIn ? 'bg-red-50 text-red-600 hover:bg-red-100' : 'bg-green-50 text-green-600 hover:bg-green-100'}`}
-                                        >
-                                            {isCheckedIn ? 'Check Out' : 'Check In ->'}
-                                        </button>
-                                        <div className="mt-2 text-center">
-                                            <p className="text-xs text-gray-400">Since 09:00 AM</p>
+                                    {/* Check-in/Check-out Button - Only for Employees */}
+                                    {user?.role === 'Employee' && (
+                                        <div className="px-4 py-3">
+                                            <button
+                                                onClick={toggleCheckIn}
+                                                className={`w-full flex items-center justify-center px-4 py-2 rounded-lg text-sm font-bold transition-colors ${isCheckedIn ? 'bg-red-50 text-red-600 hover:bg-red-100' : 'bg-green-50 text-green-600 hover:bg-green-100'}`}
+                                            >
+                                                {isCheckedIn ? 'Check Out' : 'Check In ->'}
+                                            </button>
+                                            <div className="mt-2 text-center">
+                                                <p className="text-xs text-gray-400">Since 09:00 AM</p>
+                                            </div>
                                         </div>
-                                    </div>
+                                    )}
 
                                     <div className="border-t border-gray-100 my-1"></div>
 

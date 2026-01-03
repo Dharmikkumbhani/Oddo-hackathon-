@@ -129,9 +129,14 @@ const Attendance = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 animate-fade-in-down">
             {/* Search and Actions */}
             <div className="flex flex-col sm:flex-row justify-between items-center mb-8 gap-4">
-                <button className="bg-gradient-to-r from-purple-400 to-pink-500 text-white px-6 py-2 rounded-lg font-bold shadow-md hover:shadow-lg transform hover:-translate-y-0.5 transition-all w-full sm:w-auto">
-                    NEW
-                </button>
+                {(user?.role === 'Admin' || user?.role === 'HR') && (
+                    <button 
+                        onClick={() => navigate('/signup')} 
+                        className="bg-gradient-to-r from-purple-400 to-pink-500 text-white px-6 py-2 rounded-lg font-bold shadow-md hover:shadow-lg transform hover:-translate-y-0.5 transition-all w-full sm:w-auto"
+                    >
+                        NEW
+                    </button>
+                )}
 
                 <div className="relative w-full sm:w-96">
                     <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">

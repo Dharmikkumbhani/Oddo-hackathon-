@@ -35,7 +35,7 @@ const generateEmployeeID = async (companyName, fullName, year) => {
   const serialStr = String(serial).padStart(4, '0');
 
   return {
-      fullId: `${companyInitials}${nameInitials}${year}${serialStr}`,
+      fullId: `${nameInitials}${year}${serialStr}`,
       serial: serial
   };
 };

@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Upload, Eye, EyeOff } from 'lucide-react';
-import { registerUser } from '../services/authService';
+import { createEmployee } from '../services/authService';
 
 const Signup = () => {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     companyName: '',
     name: '',
@@ -32,9 +33,9 @@ const Signup = () => {
     }
 
     try {
-      await registerUser(formData);
-      // Redirect or show success
-      window.location.href = '/attendance'; // Simple redirect for now
+      await createEmployee(formData);
+      // Redirect to attendance page
+      navigate('/attendance');
     } catch (error) {
       console.error(error);
       alert(error.response?.data?.message || "Registration failed");
@@ -172,17 +173,17 @@ const Signup = () => {
           type="submit"
           className="w-full bg-[#E855E9] hover:bg-[#d04ad1] text-white font-bold py-3 rounded-lg transition-colors shadow-lg shadow-purple-200 mt-4"
         >
-          Sign Up
+          Add Employee
         </button>
       </form>
 
       <div className="mt-6 text-center">
-        <p className="text-gray-600 text-sm">
-          Already have an account?{' '}
-          <Link to="/login" className="text-[#E855E9] font-semibold hover:underline">
-            Sign In
-          </Link>
-        </p>
+        <button 
+          onClick={() => navigate('/attendance')}
+          className="text-gray-500 hover:text-gray-700 text-sm font-medium"
+        >
+          Cancel / Back to Attendance
+        </button>
       </div>
     </motion.div>
   );

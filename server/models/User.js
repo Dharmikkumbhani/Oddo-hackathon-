@@ -5,7 +5,7 @@ const User = sequelize.define('User', {
   id: {
     type: DataTypes.INTEGER,
     autoIncrement: true,
-    primaryKey: true,   
+    primaryKey: true,
   },
   companyName: {
     type: DataTypes.STRING,
@@ -40,6 +40,34 @@ const User = sequelize.define('User', {
   },
   serialNumber: {
     type: DataTypes.INTEGER,
+  },
+  department: {
+    type: DataTypes.STRING,
+  },
+  manager: {
+    type: DataTypes.STRING,
+  },
+  location: {
+    type: DataTypes.STRING,
+  },
+  about: {
+    type: DataTypes.TEXT,
+  },
+  interests: {
+    type: DataTypes.JSONB, // Storing as JSON array of strings
+    defaultValue: []
+  },
+  skills: {
+    type: DataTypes.JSONB, // Storing as JSON array of strings
+    defaultValue: []
+  },
+  certifications: {
+    type: DataTypes.JSONB, // Storing as JSON array of objects/strings
+    defaultValue: []
+  },
+  salaryDetails: {
+    type: DataTypes.JSONB, // Storing detailed salary components
+    defaultValue: {}
   }
 });
 
